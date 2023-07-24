@@ -31,7 +31,7 @@ puts
 puts
 
 module HexletCode
-  attr_accessor :attributes
+  attr_accessor :attributes, :input, :form
 
   def initialize params
     @attributes = {}
@@ -42,27 +42,37 @@ module HexletCode
   end
 
   class << self
-    def form_for(struct, url = {})
+    def form_for(struct, url={}, *attributes)
+      @form = []
+
       if url.key?(:url)
         url.each_pair do |_name, value|
-          @form = HexletCode::Tag.build('form', action: value, method: 'post') { "\n\t#{input struct}\n" }
+          @form << "<form action='#{value}' method='post'>"
+          @form << "\n\t#{input struct}\n"
+          @form << '</form>'
         end
       else
-        @form = HexletCode::Tag.build('form', action: '#', method: 'post') { "\n\t#{input struct}\n" }
+        @form << "<form action='#' method='post'>"
+        @form << "\n\t#{input struct}\n"
+        @form << '</form>'
       end
 
-      @form
+      @form.join
     end
 
-    def input(struct)
+    def input(struct, *attributes)
+      @input = []
+
       struct.each_pair do |name, value|
-        @input = HexletCode::Tag.build('input', name: value, type: 'text')
-        # pp struct
         pp name
-        # pp "#{name}=#{value}" if name
+        attributes << "#{name}='#{value}'"
       end
 
-      @input
+      @input << "<input "
+      @input << attributes.join(' ')
+      @input << ">"
+
+      @input.join
     end
   end
 end

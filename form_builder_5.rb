@@ -30,39 +30,61 @@ pp HexletCode::Tag.build('div')
 puts
 puts
 
+
+
 module HexletCode
-  attr_accessor :attributes
-
-  def initialize params
-    @attributes = {}
-
-    params.each do |name, value|
-      @attributes[name] = value
-    end
-  end
-
   class << self
-    def form_for(struct, url = {})
+    def form_for(struct, url={}, *attributes)
+      @form = []
+
       if url.key?(:url)
         url.each_pair do |_name, value|
-          @form = HexletCode::Tag.build('form', action: value, method: 'post') { "\n\t#{input struct}\n" }
+          @form << "<form action='#{value}' method='post'>"
+          # @form << "\n\t#{block}\n"
+          # @form << "\n\t#{input struct}\n"
+          # @form << "\n\t#{block.input struct}\n"
+          @form << "\n\t#{yield if block_given?}\n"
+          # @form << "\n\t#{yield (input struct) if block_given?}\n"
+          # @form << "\n\t#{yield block}\n"
+          @form << '</form>'
         end
       else
-        @form = HexletCode::Tag.build('form', action: '#', method: 'post') { "\n\t#{input struct}\n" }
+        @form << "<form action='#' method='post'>"
+        # @form << "\n\t#{block}\n"
+        # @form << "\n\t#{input struct}\n"
+        # @form << "\n\t#{block.input struct}\n"
+        @form << "\n\t#{yield if block_given?}\n"
+        # @form << "\n\t#{yield (input struct) if block_given?}\n"
+        # @form << "\n\t#{yield block}\n"
+        @form << '</form>'
       end
 
-      @form
+      @form.join
     end
 
-    def input(struct)
-      struct.each_pair do |name, value|
-        @input = HexletCode::Tag.build('input', name: value, type: 'text')
-        # pp struct
-        pp name
-        # pp "#{name}=#{value}" if name
+    def input(struct, **options)
+      @input = []
+
+      attributes = struct.to_h.each_with_object([]) do |(key, value), attrs|
+        case options[:as]
+        when :textarea
+          attrs << { key => "name='#{key}' type='textarea' value='#{value}'" }
+        else
+          attrs << { key => "name='#{key}' type='text' value='#{value}'" }
+        end
       end
 
-      @input
+      # attributes.each do |hash|
+      #   key = hash.keys.first
+      #   value = hash[key]
+      #
+      #   @input << '<input '
+      #   @input << value
+      #   @input <<  " #{options.keys.first}='#{options.values.first}'" if options.present?
+      #   @input << '>'
+      # end
+      #
+      # @input
     end
   end
 end
@@ -72,8 +94,8 @@ User = Struct.new(:name, :job, :gender, keyword_init: true)
 user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 html = HexletCode.form_for user do |f|
-  puts f
-  f.input :name
+  pp f
+  # f.input :name
   # f.input :job, as: :text
 end
 
@@ -82,7 +104,6 @@ end
 #   <textarea name="job" cols="20" rows="40">hexlet</textarea>
 # </form>
 puts html
-# puts html.attributes
 puts
 
 html_2 = HexletCode.form_for user, url: '#' do |f|

@@ -59,9 +59,9 @@ class FuckSomebody
   end
 
   def self.who person
-    @result << person.attributes
+    # @result << person.attributes
 
-    pp @result.join(' ')
+    # pp @result.join(' ')
   end
 
   def self.add_or_check_person name
@@ -83,10 +83,10 @@ pp someone.attributes
 pp someone.you
 pp someone.me
 
-FuckSomebody.fuck someone do |person|
-  person.who
-end
+# FuckSomebody.fuck someone do |person|
+#   person.who
+# end
 
 FuckSomebody.who someone do |person|
-  person.upcased :you
+  pp person.upcased :you
 end
