@@ -54,6 +54,8 @@ class Car
   end
 end
 
+
+
 car = Car.new(
   id:         '1',
   title:      'First Post',
@@ -65,17 +67,20 @@ car = Car.new(
 pp car
 pp car.attributes
 pp car.attribute_options
+
 puts
 puts
 
 pp car.attribute :created_at, type: :datetime
 pp car.attribute_options
+
 puts
 
 car.attributes do |c|
   pp c.attribute :created_at, type: :datetime
   pp c.attribute_options
 end
+
 puts
 puts
 

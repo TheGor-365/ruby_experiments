@@ -3,7 +3,7 @@ class ShoppingList
     array = []
 
     array << 'wow'
-    
+
     options.each_with_object({}) do |(name, value), hash|
       array << value if name
     end

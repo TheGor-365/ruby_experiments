@@ -66,16 +66,19 @@ end
 form_1 = Form.new input: 1, area: 2, submit: 3
 
 pp form_1
+
 puts
 
 pp form_1.input
 pp form_1.area
 pp form_1.submit
+
 puts
 
 form_2 = Form.new input: 11 do |f|
   pp f.input
 end
+
 puts
 
 pp form_2

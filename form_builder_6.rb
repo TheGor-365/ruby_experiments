@@ -66,22 +66,26 @@ end
 form_1 = Form.new(input: 1, area: 2, submit: 3)
 
 pp form_1
+
 puts
 
 form_1.input do |f|
   pp f
 end
+
 puts
 
 pp form_1.input
 pp form_1.area
 pp form_1.submit
+
 puts
 puts
 
 form_1.input do |f|
   pp f
 end
+
 puts
 puts
 
@@ -96,4 +100,5 @@ form_2 = NewForm.new do |f|
 end
 
 pp form_2
+
 puts
