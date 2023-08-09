@@ -21,67 +21,30 @@ module HexletCode
   end
 end
 
-pp HexletCode::Tag.build('br')
-pp HexletCode::Tag.build('img', src: 'path/to/image')
-pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
-pp HexletCode::Tag.build('label') { 'Email' }
-pp HexletCode::Tag.build('label', for: 'email') { 'Email' }
-pp HexletCode::Tag.build('div')
-
-puts
-puts
-
-
-
 module HexletCode
   class << self
     def form_for struct, url={}, &block
       @params = struct.to_h
+      form = []
 
       if url.key?(:url)
-        puts "<form action='#{url.fetch(:url)}' method='post'>"
-        print instance_eval(&block)
-        print '</form>'
+        form << "<form action='#{url.fetch(:url)}' method='post'>\n"
+        puts instance_eval(&block)
+        # form << yield_self(&block)
+        form << "\n</form>"
       else
-        puts "<form action='#' method='post'>"
-        print instance_eval(&block)
-        print '</form>'
+        form << "<form action='#' method='post'>\n"
+        puts instance_eval(&block)
+        # form << yield_self(&block)
+        form << "\n</form>"
       end
     end
 
     def input param_name, **field_options
-      @params.merge! field_options
-
-      @field_attributes = @params.each_with_object({}) do |(name, value), hash|
-        case field_options[:as]
-        when :text then hash[name] = "name='#{name}' cols='#{field_options.fetch(:cols, 20)}' rows='#{field_options.fetch(:rows, 40)}'"
-        else
-          hash[name] = "name='#{name}' type='text' value='#{value}'"
-        end
+      @names = @params.each_with_object([]) do |(name, value), names|
+        names << name if name == param_name
       end
-      field_constructor param_name, **field_options
-
-      puts @field.join
-    end
-
-    def field_constructor param_name, **field_options
-      public_send(param_name, self.struct) if !@params[param_name]
-
-      @field = []
-
-      case field_options[:as]
-      when :text
-        @field << '  <textarea '
-        @field << @field_attributes.fetch(param_name)
-        @field << '>'
-        @field << @params.fetch(param_name)
-        @field << '</textarea>'
-      else
-        @field << '  <input '
-        @field << @field_attributes.fetch(param_name)
-        field_options.map { |option_name, value| @field << " #{option_name}='#{value}'" }
-        @field << '>'
-      end
+      @names
     end
   end
 end
@@ -92,7 +55,7 @@ user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 
 
-HexletCode.form_for user do |f|
+html = HexletCode.form_for user do |f|
   f.input :name
   f.input :job, as: :text
 end
@@ -102,8 +65,7 @@ end
 #   <textarea name="job" cols="20" rows="40">hexlet</textarea>
 # </form>
 
-# html
-puts
+puts html
 puts
 
 
