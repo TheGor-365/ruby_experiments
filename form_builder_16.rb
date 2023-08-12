@@ -9,12 +9,12 @@ module HexletCode
 
       if url.key?(:url)
         puts "<form action='#{url.fetch(:url)}' method='post'>"
-        # instance_eval(&block)
+        instance_eval(&block)
         # yield_self if block_given?
         puts "</form>"
       else
         puts "<form action='#' method='post'>"
-        # instance_eval(&block)
+        instance_eval(&block)
         # yield_self if block_given?
         puts "</form>"
       end
@@ -32,7 +32,7 @@ module HexletCode
           hash[name] = "name='#{name}' type='text' value='#{value}'"
         end
       end
-      field_constructor(param_name)
+      field_constructor(param_name, **field_options)
     end
 
     def submit(*button_name)

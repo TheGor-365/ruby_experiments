@@ -21,48 +21,108 @@ module HexletCode
   end
 end
 
-pp HexletCode::Tag.build('br')
-pp HexletCode::Tag.build('img', src: 'path/to/image')
-pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
-pp HexletCode::Tag.build('label') { 'Email' }
-pp HexletCode::Tag.build('label', for: 'email') { 'Email' }
-pp HexletCode::Tag.build('div')
-puts
-puts
+# pp HexletCode::Tag.build('br')
+# pp HexletCode::Tag.build('img', src: 'path/to/image')
+# pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
+# pp HexletCode::Tag.build('label') { 'Email' }
+# pp HexletCode::Tag.build('label', for: 'email') { 'Email' }
+# pp HexletCode::Tag.build('div')
+# puts
+# puts
 
 module HexletCode
-  attr_accessor :attributes
-
-  def initialize params
-    @attributes = {}
-
-    params.each do |name, value|
-      @attributes[name] = value
-    end
-  end
-
   class << self
-    def form_for(struct, url = {})
-      if url.key?(:url)
-        url.each_pair do |_name, value|
-          @form = HexletCode::Tag.build('form', action: value, method: 'post') { "\n\t#{input struct}\n" }
-        end
-      else
-        @form = HexletCode::Tag.build('form', action: '#', method: 'post') { "\n\t#{input struct}\n" }
-      end
+    def form_for(struct, url = {}, &block)
+      @params = struct.to_h
+      form = []
 
-      @form
+      if url.key?(:url)
+        form << "<form action='#{url.fetch(:url)}' method='post'>\n"
+        form << instance_eval(&block)
+        form << "\n</form>\n"
+      else
+        form << "<form action='#' method='post'>\n"
+        form << instance_eval(&block)
+        form << "\n</form>\n"
+      end
+      form.join
     end
 
-    def input(struct)
-      struct.each_pair do |name, value|
-        @input = HexletCode::Tag.build('input', name: value, type: 'text')
-        # pp struct
-        pp name
-        # pp "#{name}=#{value}" if name
+    def input(param_name, **field_options)
+      @params.merge! field_options
+      @input = []
+
+      @input_attrs = @params.each_with_object({}) do |(name, value), hash|
+        # if name == param_name
+          case field_options[:as]
+          when :text
+            hash[name] = "name='#{name}' cols='#{field_options.fetch(:cols, 20)}' rows='#{field_options.fetch(:rows, 40)}'"
+          else
+            hash[name] = "name='#{name}' type='text' value='#{value}'"
+          end
+        # end
       end
 
-      @input
+      # @input_attrs
+      input_builder(param_name, **field_options)
+    end
+
+    def input_builder(param_name, **field_options)
+      @field = []
+
+      @input_attrs.map { |name, value| "#{name}='#{value}'" if name == param_name }
+
+      # @input_attrs.map do |name, value|
+      #   if name == param_name
+      #     case field_options[:as]
+      #     when :text
+      #       @field << label(param_name)
+      #       @field << "  <textarea "
+      #       @field << @input_attrs.fetch(param_name)
+      #       @field << ">"
+      #       @field << @params.fetch(param_name)
+      #       @field << "</textarea>"
+      #     else
+      #       @field << label(param_name)
+      #       @field << "  <input "
+      #       @field << @input_attrs.fetch(param_name)
+      #       field_options.map { |option_name, value| @field << " #{option_name}='#{value}'" }
+      #       @field << ">"
+      #     end
+      #   end
+      # end
+
+      # case field_options[:as]
+      # when :text
+      #   @field << label(param_name)
+      #   @field << "  <textarea "
+      #   @field << @input_attrs.fetch(param_name)
+      #   @field << ">"
+      #   @field << @params.fetch(param_name)
+      #   @field << "</textarea>"
+      # else
+      #   @field << label(param_name)
+      #   @field << "  <input "
+      #   @field << @input_attrs.fetch(param_name)
+      #   field_options.map { |option_name, value| @field << " #{option_name}='#{value}'" }
+      #   @field << ">"
+      # end
+    end
+
+    def submit(*button_name)
+      submit = []
+
+      submit << "  <input type='submit'"
+      submit << " name='#{button_name.present? ? button_name.join : 'Save'}'>"
+      submit.join
+    end
+
+    def label(param_name)
+      label = []
+
+      label << "  <label for='#{param_name.to_s}'>"
+      label << param_name.to_s.capitalize
+      label << "</label>\n"
     end
   end
 end
@@ -71,49 +131,81 @@ end
 User = Struct.new(:name, :job, :gender, keyword_init: true)
 user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
+
+
 html = HexletCode.form_for user do |f|
-  puts f
   f.input :name
-  # f.input :job, as: :text
+  f.input :job, as: :text
 end
 
 # <form action="#" method="post">
 #   <input name="name" type="text" value="rob">
 #   <textarea name="job" cols="20" rows="40">hexlet</textarea>
 # </form>
-puts html
-# puts html.attributes
-puts
+print html
 
-html_2 = HexletCode.form_for user, url: '#' do |f|
-  # f.input :name, class: 'user-input'
-  # f.input :job
-  # f.submit
+
+html = HexletCode.form_for user, url: '#' do |f|
+  f.input :name, class: 'user-input'
+  f.input :job
 end
 
 # <form action="#" method="post">
 #   <input name="name" type="text" value="rob" class="user-input">
-#   <input name="job" type="text" value="">
+#   <input name="job" type="text" value="hexlet">
 # </form>
-puts html_2
-puts
+print html
 
-html_3 = HexletCode.form_for user, url: '/users' do |f|
-  # f.input :job, as: :text, rows: 50, cols: 50
+
+html = HexletCode.form_for user, url: '/users' do |f|
+  f.input :job, as: :text, rows: 50, cols: 50
 end
 
-# <form action="/users" method="post">
+# <form action="#" method="post">
 #   <textarea cols="50" rows="50" name="job">hexlet</textarea>
 # </form>
-puts html_3
-puts
+print html
 
-html_4 = HexletCode.form_for user, url: '/users/path' do |f|
-  # f.input :name
-  # f.input :job, as: :text
-  # # Поля age у пользователя нет
+
+html = HexletCode.form_for user, url: '/users/path' do |f|
+  f.input :name
+  f.input :job, as: :text
+
   # f.input :age
 end
+
 # =>  `public_send': undefined method `age' for #<struct User id=nil, name=nil, job=nil> (NoMethodError)
-puts html_4
-puts
+print html
+
+
+
+html = HexletCode.form_for user do |f|
+  f.input :name
+  f.input :job
+  f.submit
+end
+
+# <form action="#" method="post">
+#   <label for="name">Name</label>
+#   <input name="name" type="text" value="">
+#   <label for="job">Job</label>
+#   <input name="job" type="text" value="hexlet">
+#   <input type="submit" value="Save">
+# </form>
+print html
+
+
+html = HexletCode.form_for user, url: '#' do |f|
+  f.input :name
+  f.input :job
+  f.submit 'Wow'
+end
+
+# <form action="#" method="post">
+#   <label for="name">Name</label>
+#   <input name="name" type="text" value="">
+#   <label for="job">Job</label>
+#   <input name="job" type="text" value="hexlet">
+#   <input type="submit" value="Wow">
+# </form>
+print html
