@@ -21,15 +21,6 @@ module HexletCode
   end
 end
 
-# pp HexletCode::Tag.build('br')
-# pp HexletCode::Tag.build('img', src: 'path/to/image')
-# pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
-# pp HexletCode::Tag.build('label') { 'Email' }
-# pp HexletCode::Tag.build('label', for: 'email') { 'Email' }
-# pp HexletCode::Tag.build('div')
-# puts
-# puts
-
 module HexletCode
   class << self
     def form_for(struct, url = {}, &block)
@@ -50,63 +41,27 @@ module HexletCode
 
     def input(param_name, **field_options)
       @params.merge! field_options
-      @input = []
+      input = []
 
-      @input_attrs = @params.each_with_object({}) do |(name, value), hash|
-        # if name == param_name
+      @params.map do |name, value|
+        if name == param_name
           case field_options[:as]
           when :text
-            hash[name] = "name='#{name}' cols='#{field_options.fetch(:cols, 20)}' rows='#{field_options.fetch(:rows, 40)}'"
+            input << label(param_name)
+            input << "  <textarea "
+            input << "name='#{name}' cols='#{field_options.fetch(:cols, 20)}' rows='#{field_options.fetch(:rows, 40)}'"
+            input << ">"
+            input << @params.fetch(param_name)
+            input << "</textarea>"
           else
-            hash[name] = "name='#{name}' type='text' value='#{value}'"
+            input << label(param_name)
+            input << "  <input "
+            input << "name='#{name}' type='text' value='#{value}'"
+            input << field_options.map { |option_name, value| " #{option_name}='#{value}'" }
+            input << ">"
           end
-        # end
+        end
       end
-
-      # @input_attrs
-      input_builder(param_name, **field_options)
-    end
-
-    def input_builder(param_name, **field_options)
-      @field = []
-
-      @input_attrs.map { |name, value| "#{name}='#{value}'" if name == param_name }
-
-      # @input_attrs.map do |name, value|
-      #   if name == param_name
-      #     case field_options[:as]
-      #     when :text
-      #       @field << label(param_name)
-      #       @field << "  <textarea "
-      #       @field << @input_attrs.fetch(param_name)
-      #       @field << ">"
-      #       @field << @params.fetch(param_name)
-      #       @field << "</textarea>"
-      #     else
-      #       @field << label(param_name)
-      #       @field << "  <input "
-      #       @field << @input_attrs.fetch(param_name)
-      #       field_options.map { |option_name, value| @field << " #{option_name}='#{value}'" }
-      #       @field << ">"
-      #     end
-      #   end
-      # end
-
-      # case field_options[:as]
-      # when :text
-      #   @field << label(param_name)
-      #   @field << "  <textarea "
-      #   @field << @input_attrs.fetch(param_name)
-      #   @field << ">"
-      #   @field << @params.fetch(param_name)
-      #   @field << "</textarea>"
-      # else
-      #   @field << label(param_name)
-      #   @field << "  <input "
-      #   @field << @input_attrs.fetch(param_name)
-      #   field_options.map { |option_name, value| @field << " #{option_name}='#{value}'" }
-      #   @field << ">"
-      # end
     end
 
     def submit(*button_name)
