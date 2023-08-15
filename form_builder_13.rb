@@ -152,3 +152,63 @@ user.form do |f|
   f.input :gender, as: :text, rows: 56, cols: 77
   f.input :job, as: :text
 end
+
+
+puts
+puts
+puts
+
+
+
+class FormBuilder
+  def initialize params
+    @params = params
+  end
+
+  def form &block
+    form = []
+    form << "<form url='/path' method='post'>\n"
+    form << instance_eval(&block)
+    form << '</form>'
+    pp form
+  end
+
+  def input param_name, **options
+    @params.merge! options
+    input = []
+
+    attributes = @params.each_with_object({}) do |(name, value), hash|
+      case options[:as]
+      when :text
+        hash[name] = "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
+      else
+        hash[name] = "name='#{name}' type='text' value='#{value}'"
+      end
+    end
+
+    case options[:as]
+    when :text
+      input << '  <textarea '
+      input << attributes.fetch(param_name)
+      input << '>'
+      input << @params.fetch(param_name)
+      input << '</textarea>'
+    else
+      input << '  <input '
+      input << attributes.fetch(param_name)
+      options.map { |option_name, value| input << " #{option_name}='#{value}'" }
+      input << '>'
+    end
+    puts input
+  end
+end
+
+
+user = FormBuilder.new name: 'rob', job: 'hexlet', gender: 'm'
+
+user.form do |f|
+  f.input :job, class: 'www'
+  f.input :name
+  f.input :gender, as: :text, rows: 56, cols: 77
+  f.input :job, as: :text
+end

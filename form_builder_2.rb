@@ -43,6 +43,16 @@ module HexletCode
       @params.merge! field_options
       input = []
 
+      @params.each_with_object({}) do |(name, value), hash|
+        case field_options[:as]
+        when :text
+          hash[name] =
+            "name='#{name}' cols='#{field_options.fetch(:cols, 20)}' rows='#{field_options.fetch(:rows, 40)}'"
+        else
+          hash[name] = "name='#{name}' type='text' value='#{value}'"
+        end
+      end
+
       @params.map do |name, value|
         if name == param_name
           case field_options[:as]
@@ -62,6 +72,7 @@ module HexletCode
           end
         end
       end
+      input.join
     end
 
     def submit(*button_name)
@@ -69,7 +80,6 @@ module HexletCode
 
       submit << "  <input type='submit'"
       submit << " name='#{button_name.present? ? button_name.join : 'Save'}'>"
-      submit.join
     end
 
     def label(param_name)
