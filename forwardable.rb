@@ -1,16 +1,18 @@
 require 'forwardable'
 
 class RecordCollection
+  extend Forwardable
 
   attr_accessor :records
-
-  extend Forwardable
 
   def_delegator :@records, :[], :record_number
 end
 
-r = RecordCollection.new
 
-p r.records = [4,5,6]
+record = RecordCollection.new
+
+pp record.records = [ 4, 5, 6 ]
+
 puts
-p r.record_number(0)
+
+pp record.record_number(0)

@@ -1,7 +1,6 @@
 require 'forwardable'
 
 class MyQueue
-
   CONST = 1
 
   extend Forwardable
@@ -16,10 +15,10 @@ class MyQueue
   def_delegator 'MyQueue::CONST', :to_i
 end
 
-q = MyQueue.new
 
-puts q.mypush 42
-puts q.push 42
-puts q.queue    #=> [42]
-# puts q.push 23  #=> NoMethodError
-puts q.to_i
+queue = MyQueue.new
+
+puts queue.mypush 42
+puts queue.push 42
+puts queue.queue
+puts queue.to_i

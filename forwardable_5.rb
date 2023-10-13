@@ -3,7 +3,6 @@ require 'forwardable'
 User = Struct.new(:first_name, :last_name)
 
 class UserDecorator
-
   extend Forwardable
 
   def_delegator :@user, :first_name, :personal_name
@@ -18,6 +17,7 @@ class UserDecorator
   end
 end
 
+
 decorated_user = UserDecorator.new(User.new("John", "Doe"))
-# decorated_user.first_name
+
 puts decorated_user.personal_name

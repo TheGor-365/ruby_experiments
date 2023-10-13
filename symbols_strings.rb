@@ -1,2 +1,2 @@
-p ({key: 'value'}).eql?({'key' => 'value'})
-p ({key: 'value'}).eql?({key: 'value'})
+pp ({key: 'value'}).eql?({'key' => 'value'})
+pp ({key: 'value'}).eql?({key: 'value'})
