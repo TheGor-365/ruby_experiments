@@ -66,9 +66,7 @@ module HexletCode
     end
 
     def field_constructor(param_name, **field_options)
-      public_send(param_name, self.struct) if !@params[param_name]
-
-      @field = []
+      field = []
 
       case field_options[:as]
       when :text
@@ -79,7 +77,7 @@ module HexletCode
         field << '</textarea>'
       else
         field << '  <input '
-        field << @field_attributes.fetch(param_name)
+        # field << @field_attributes.fetch(param_name)
         field_options.map { |option_name, value| field << " #{option_name}='#{value}'" }
         field << '>'
         field.join

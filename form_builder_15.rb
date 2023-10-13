@@ -10,7 +10,7 @@ module HexletCode
       tag << attributes.join
       tag << '>' if !unpaired?(name)
       tag << yield if block_given?
-      unpaired?(name) ? tag << '>' : tag << "</#{name}>"
+      tag << (unpaired?(name) ? ">" : "</#{name}>")
       tag.join
     end
 
@@ -21,26 +21,25 @@ module HexletCode
   end
 end
 
+
 module HexletCode
   class << self
-    def form_for struct, url={}, &block
+    def form_for(struct, url={}, &block)
       @params = struct.to_h
       form = []
 
       if url.key?(:url)
         form << "<form action='#{url.fetch(:url)}' method='post'>\n"
-        puts instance_eval(&block)
-        # form << yield_self(&block)
+        form << yield
         form << "\n</form>"
       else
         form << "<form action='#' method='post'>\n"
-        puts instance_eval(&block)
-        # form << yield_self(&block)
+        form << yield
         form << "\n</form>"
       end
     end
 
-    def input param_name, **field_options
+    def input(param_name, **field_options)
       @names = @params.each_with_object([]) do |(name, value), names|
         names << name if name == param_name
       end

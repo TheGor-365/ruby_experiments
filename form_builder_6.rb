@@ -36,13 +36,12 @@ module InputType
 
         case as
         when :text
-          result << "<input name='name' type='text' value='value'>"
+          result << "<input type='text'>"
         when :textarea
-          result << "<input name='name' type='textarea' value='value'>"
+          result << "<input type='textarea'>"
         when :submit
-          result << "<input name='name' type='submit' value='value'>"
+          result << "<input type='submit'>"
         end
-
         result.join
       end
     end
@@ -58,19 +57,21 @@ end
 class Form
   include InputType
 
-  attribute :input, as: :text
-  attribute :area, as: :textarea
+  attribute :input,  as: :text
+  attribute :area,   as: :textarea
   attribute :submit, as: :submit
 end
 
+
 form_1 = Form.new(input: 1, area: 2, submit: 3)
 
+puts form_1
 pp form_1
 
 puts
 
-form_1.input do |f|
-  pp f
+pp form_1 do |f|
+  f.input
 end
 
 puts
@@ -100,5 +101,6 @@ form_2 = NewForm.new do |f|
 end
 
 pp form_2
+puts form_2
 
 puts

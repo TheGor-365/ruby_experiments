@@ -10,7 +10,7 @@ module HexletCode
       tag << attributes.join
       tag << '>' if !unpaired?(name)
       tag << yield if block_given?
-      unpaired?(name) ? tag << '>' : tag << "</#{name}>"
+      tag << (unpaired?(name) ? ">" : "</#{name}>")
       tag.join
     end
 
@@ -27,6 +27,7 @@ pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
 pp HexletCode::Tag.build('label') { 'Email' }
 pp HexletCode::Tag.build('label', for: 'email') { 'Email' }
 pp HexletCode::Tag.build('div')
+
 puts
 puts
 
@@ -43,36 +44,35 @@ module HexletCode
 
   class << self
     def form_for(struct, url={}, *attributes)
-      @form = []
+      form = []
 
       if url.key?(:url)
         url.each_pair do |_name, value|
-          @form << "<form action='#{value}' method='post'>"
-          @form << "\n\t#{input struct}\n"
-          @form << '</form>'
+          form << "<form action='#{value}' method='post'>"
+          form << "\n  #{input(struct)}\n"
+          form << '</form>'
         end
       else
-        @form << "<form action='#' method='post'>"
-        @form << "\n\t#{input struct}\n"
-        @form << '</form>'
+        form << "<form action='#' method='post'>"
+        form << "\n  #{input(struct)}\n"
+        form << '</form>'
       end
-
-      @form.join
+      form.join
     end
 
     def input(struct, *attributes)
-      @input = []
+      input = []
 
       struct.each_pair do |name, value|
         pp name
+        pp value
         attributes << "#{name}='#{value}'"
       end
 
-      @input << "<input "
-      @input << attributes.join(' ')
-      @input << ">"
-
-      @input.join
+      input << "<input "
+      input << attributes.join(' ')
+      input << ">"
+      input.join
     end
   end
 end

@@ -6,18 +6,18 @@ module HexletCode
   class << self
     def form_for(struct, url = {}, &block)
       @params = struct.to_h
+      form = []
 
       if url.key?(:url)
-        puts "<form action='#{url.fetch(:url)}' method='post'>"
-        # instance_eval(&block)
-        yield_self if block_given?
-        puts "</form>"
+        form << "<form action='#{url.fetch(:url)}' method='post'>"
+        form << yield if block_given?
+        form << "</form>"
       else
-        puts "<form action='#' method='post'>"
-        # instance_eval(&block)
-        yield_self if block_given?
-        puts "</form>"
+        form << "<form action='#' method='post'>"
+        form << yield if block_given?
+        form << "</form>"
       end
+      form.join
     end
 
     def input(param_name, **field_options)
@@ -26,8 +26,7 @@ module HexletCode
       @input_attrs = @params.each_with_object({}) do |(name, value), hash|
         case field_options[:as]
         when :text
-          hash[name] =
-            "name='#{name}' cols='#{field_options.fetch(:cols, 20)}' rows='#{field_options.fetch(:rows, 40)}'"
+          hash[name] = "name='#{name}' cols='#{field_options.fetch(:cols, 20)}' rows='#{field_options.fetch(:rows, 40)}'"
         else
           hash[name] = "name='#{name}' type='text' value='#{value}'"
         end
@@ -41,7 +40,7 @@ module HexletCode
       submit << "  <input type='submit'"
       submit << " name='#{button_name.present? ? button_name.join : 'Save'}'"
       submit << ">"
-      puts submit.join
+      submit.join
     end
 
     def field_constructor(param_name, **field_options)
@@ -63,7 +62,7 @@ module HexletCode
         field_options.map { |option_name, value| field << " #{option_name}='#{value}'" }
         field << ">"
       end
-      puts field.join
+      field.join
     end
 
     def label(param_name)

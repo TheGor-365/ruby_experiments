@@ -76,9 +76,12 @@ pp form_1.submit
 puts
 
 form_2 = Form.new input: 11 do |f|
-  pp f.input
+  f.input
 end
 
 puts
 
-pp form_2
+puts form_2
+puts form_2.input.inspect
+puts form_2.area.inspect
+puts form_2.submit.inspect

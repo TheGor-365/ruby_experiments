@@ -5,7 +5,7 @@ class Backer
     @params = params
   end
 
-  def back key, **options
+  def self.back(key, **options)
     value = @params[key]
     value_2 = options[key]
 
@@ -27,35 +27,6 @@ end
 
 
 
-backer = Backer.new one: 'first', two: 'second'
+some = {one: 'first', two: 'second'}
 
-pp backer
-pp backer.back :one
-pp backer.back :two
-pp backer.back :three
-puts
-
-pp backer.params
-puts
-puts
-
-pp backer.back :one, class: 'text-muted'
-pp backer.back :two, class: 'text-muted', attribute_name: 'attribute_value'
-pp backer.back :four, class: 'text-muted'
-puts
-
-pp backer
-puts
-
-pp backer.params
-puts
-puts
-
-
-second_backer = Backer.new two: 'second', next: 'the-next' do |f|
-  pp f
-end
-
-second_backer.back :two do |b|
-  pp b
-end
+pp some
