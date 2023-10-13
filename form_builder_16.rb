@@ -9,13 +9,13 @@ module HexletCode
 
       if url.key?(:url)
         puts "<form action='#{url.fetch(:url)}' method='post'>"
-        instance_eval(&block)
-        # yield_self if block_given?
+        # instance_eval(&block)
+        yield_self if block_given?
         puts "</form>"
       else
         puts "<form action='#' method='post'>"
-        instance_eval(&block)
-        # yield_self if block_given?
+        # instance_eval(&block)
+        yield_self if block_given?
         puts "</form>"
       end
     end

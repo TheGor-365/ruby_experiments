@@ -41,7 +41,7 @@ puts
 
 class ShoppingList
   attr_reader :params
-  
+
   def self.items &block
     array = []
 
@@ -69,4 +69,6 @@ list = ShoppingList.items do |item|
 end
 
 puts list
-pp ShoppingList.items
+pp ShoppingList.items do |item|
+  item.add ten: 'ten_10'
+end
