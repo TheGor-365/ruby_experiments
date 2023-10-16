@@ -1,3 +1,7 @@
+# -------------------------------------------------------------------------
+# Module Model
+# -------------------------------------------------------------------------
+
 module Model
   attr_accessor :attributes
 
@@ -33,6 +37,13 @@ module Model
   end
 end
 
+
+
+# -------------------------------------------------------------------------
+# Class Article
+# -------------------------------------------------------------------------
+
+
 class Article
   include Model
 
@@ -49,41 +60,46 @@ article = Article.new(
 )
 
 pp article
+
 puts
 
 pp article.title
 pp article.author
+
 puts
 
 pp article.attributes
+
 puts
 
 pp Article.upcased
+
 puts
-puts
-puts
+
+
+
+# -------------------------------------------------------------------------
+# Class Post
+# -------------------------------------------------------------------------
 
 
 class Post
-  # extend Model
-
   attr_accessor :options, :up, :back, :result
 
-  def initialize options
+  def initialize(options)
     @options = options
   end
 
-  def self.downcase **options, &block
+  def self.downcase(**options, &block)
     pp options
   end
 
-  def self.up **options
+  def self.up(**options)
     @options = options
-
     yield
   end
 
-  def back key, **args
+  def back(key, **args)
     value = @options[key]
     value_2 = args[key]
 
@@ -95,14 +111,15 @@ class Post
     @result << args.values.join(' ')
 
     case key
-    when key
-      value || value_2 ? @result : 'no-value'
+    when key then value || value_2 ? @result : 'no-value'
     end
     @result.join(' ')
   end
 end
 
+
 Post.downcase title: 'post', author: 'Alice', chapter: 'last'
+
 Post.downcase title: 'Post', author: 'Alice', chapter: 'Last' do |p|
   pp p.back :title
   pp p
@@ -113,7 +130,7 @@ Post.up title: 'the-post', author: 'Alice', chapter: 'Last' do |p|
   pp p
   pp p
 end
-puts
+
 puts
 
 post = Post.new title: 'the-post', author: 'Alice', chapter: 'Last'

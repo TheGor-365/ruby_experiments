@@ -35,14 +35,10 @@ module InputType
         result = []
 
         case as
-        when :text
-          result << "<input type='text'>"
-        when :textarea
-          result << "<input type='textarea'>"
-        when :submit
-          result << "<input type='submit'>"
+        when :text     then result << "<input type='text'>"
+        when :textarea then result << "<input type='textarea'>"
+        when :submit   then result << "<input type='submit'>"
         end
-
         result.join
       end
     end
@@ -63,7 +59,8 @@ class Form
   attribute :submit, as: :submit
 end
 
-form_1 = Form.new input: 1, area: 2, submit: 3
+
+form_1 = Form.new(input: 1, area: 2, submit: 3)
 
 pp form_1
 

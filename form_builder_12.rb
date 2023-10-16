@@ -1,3 +1,7 @@
+# -----------------------------------------------------------------
+# Class General
+# -----------------------------------------------------------------
+
 class General
   attr_accessor :params
 
@@ -49,6 +53,12 @@ end
 
 
 
+
+# -----------------------------------------------------------------
+# Class Major
+# -----------------------------------------------------------------
+
+
 module Major
   class << self
     def create(**params)
@@ -56,14 +66,14 @@ module Major
     end
 
     def update(key, **params)
-      value = @params[key]
+      value        = @params[key]
       params_value = params[key]
 
       @params.merge! params
 
-      init_params = []
+      init_params   = []
       update_params = []
-      all_params = []
+      all_params    = []
 
       init_params   << @params.fetch(key, value)
       update_params << params.values.join(' ')

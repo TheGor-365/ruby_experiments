@@ -31,10 +31,11 @@ pp HexletCode::Tag.build('div')
 puts
 puts
 
+
 module HexletCode
   attr_accessor :attributes, :input, :form
 
-  def initialize params
+  def initialize(params)
     @attributes = {}
 
     params.each do |name, value|

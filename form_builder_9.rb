@@ -41,14 +41,10 @@ class Car
       return value if value.nil?
 
       case target_type
-      when :datetime
-        DateTime.parse value
-      when :string
-        String value
-      when :integer
-        Integer value
-      when :boolean
-        !!value
+      when :datetime then DateTime.parse value
+      when :string   then String value
+      when :integer  then Integer value
+      when :boolean  then !!value
       end
     end
   end
@@ -69,7 +65,6 @@ pp car.attributes
 pp car.attribute_options
 
 puts
-puts
 
 pp car.attribute :created_at, type: :datetime
 pp car.attribute_options
@@ -81,7 +76,6 @@ car.attributes do |c|
   pp c.attribute_options
 end
 
-puts
 puts
 
 pp car

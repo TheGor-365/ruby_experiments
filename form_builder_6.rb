@@ -1,3 +1,7 @@
+# --------------------------------------------------------------
+# module InputType
+# --------------------------------------------------------------
+
 module InputType
   def initialize attrs = {}
     @attributes = {}
@@ -35,12 +39,9 @@ module InputType
         result = []
 
         case as
-        when :text
-          result << "<input type='text'>"
-        when :textarea
-          result << "<input type='textarea'>"
-        when :submit
-          result << "<input type='submit'>"
+        when :text     then result << "<input type='text'>"
+        when :textarea then result << "<input type='textarea'>"
+        when :submit   then result << "<input type='submit'>"
         end
         result.join
       end
@@ -90,6 +91,11 @@ end
 puts
 puts
 
+
+
+# --------------------------------------------------------------
+# Class NewForm
+# --------------------------------------------------------------
 
 
 class NewForm
