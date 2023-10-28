@@ -1,12 +1,13 @@
 class AppFormBuilder < ActionView::Helpers::FormBuilder
   delegate :tag, :safe_join, to: :@template
 
+
   def input(method, options = {})
     @form_options = options
-    object_type = object_type_for_method(method)
+    object_type   = object_type_for_method(method)
 
     input_type = case object_type
-    when :date then :string
+    when :date    then :string
     when :integer then :string
     else object_type
     end
@@ -20,7 +21,9 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
     send("#{override_input_type || input_type}_input", method, options)
   end
 
+
   private
+
 
   def form_group(method, options = {}, &block)
     tag.div class: "form-group #{method}" do
@@ -32,16 +35,19 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
     end
   end
 
+
   def hint_text(text)
     return if text.nil?
     tag.small text, class: "form-text text-muted"
   end
+
 
   def error_text(method)
     return unless has_error?(method)
 
     tag.div(@object.errors[method].join("<br />").html_safe, class: "invalid-feedback")
   end
+
 
   def object_type_for_method(method)
     result = if @object.respond_to?(:type_for_attribute) && @object.has_attribute?(method)
@@ -53,12 +59,12 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
     result || :string
   end
 
+
   def has_error?(method)
     return false unless @object.respond_to?(:errors)
     @object.errors.key?(method)
   end
 
-  # Inputs and helpers
 
   def string_input(method, options = {})
     form_group(method, options) do
@@ -69,6 +75,7 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
     end
   end
 
+
   def text_input(method, options = {})
     form_group(method, options) do
       safe_join [
@@ -77,6 +84,7 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
       ]
     end
   end
+
 
   def boolean_input(method, options = {})
     form_group(method, options) do
@@ -89,6 +97,7 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
     end
   end
 
+
   def collection_input(method, options, &block)
     form_group(method, options) do
       safe_join [
@@ -98,24 +107,43 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
     end
   end
 
-  def select_input(method, options = {})
-    value_method = options[:value_method] || :to_s
-    text_method = options[:text_method] || :to_s
-    input_options = options[:input_html] || {}
 
-    multiple = input_options[:multiple]
+  def select_input(method, options = {})
+    value_method  = options[:value_method] || :to_s
+    text_method   = options[:text_method] || :to_s
+    input_options = options[:input_html] || {}
+    multiple      = input_options[:multiple]
 
     collection_input(method, options) do
-      collection_select(method, options[:collection], value_method, text_method, options, merge_input_options({class: "#{"custom-select" unless multiple} form-control #{"is-invalid" if has_error?(method)}"}, options[:input_html]))
+      collection_select(
+        method,
+        options[:collection],
+        value_method,
+        text_method,
+        options,
+        merge_input_options({class: "#{"custom-select" unless multiple} form-control #{"is-invalid" if has_error?(method)}"},
+        options[:input_html])
+      )
     end
   end
+
 
   def grouped_select_input(method, options = {})
-    # We probably need to go back later and adjust this for more customization
     collection_input(method, options) do
-      grouped_collection_select(method, options[:collection], :last, :first, :to_s, :to_s, options, merge_input_options({class: "custom-select form-control #{"is-invalid" if has_error?(method)}"}, options[:input_html]))
+      grouped_collection_select(
+        method,
+        options[:collection],
+        :last,
+        :first,
+        :to_s,
+        :to_s,
+        options,
+        merge_input_options({class: "custom-select form-control #{"is-invalid" if has_error?(method)}"},
+        options[:input_html])
+      )
     end
   end
+
 
   def file_input(method, options = {})
     form_group(method, options) do
@@ -126,10 +154,12 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
     end
   end
 
+
   def collection_of(input_type, method, options = {})
     form_builder_method, custom_class, input_builder_method = case input_type
+
     when :radio_buttons then [:collection_radio_buttons, "custom-radio", :radio_button]
-    when :check_boxes then [:collection_check_boxes, "custom-checkbox", :check_box]
+    when :check_boxes   then [:collection_check_boxes, "custom-checkbox", :check_box]
     else raise "Invalid input_type for collection_of, valid input_types are \":radio_buttons\", \":check_boxes\""
     end
 
@@ -149,13 +179,16 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
     end
   end
 
+
   def radio_buttons_input(method, options = {})
     collection_of(:radio_buttons, method, options)
   end
 
+
   def check_boxes_input(method, options = {})
     collection_of(:check_boxes, method, options)
   end
+
 
   def string_field(method, options = {})
     case object_type_for_method(method)
@@ -165,9 +198,9 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
         date_field(method, merge_input_options(options, {data: {datepicker: true}})),
         tag.div {
           date_select(method, {
-            order: [:month, :day, :year],
+            order:      [:month, :day, :year],
             start_year: birthday ? 1900 : Date.today.year - 5,
-            end_year: birthday ? Date.today.year : Date.today.year + 5,
+            end_year:   birthday ? Date.today.year : Date.today.year + 5,
           }, {data: {date_select: true}})
         },
       ]
@@ -175,16 +208,15 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
     when :string
       case method.to_s
       when /password/ then password_field(method, options)
-      # when /time_zone/ then :time_zone
-      # when /country/   then :country
-      when /email/ then email_field(method, options)
-      when /phone/ then telephone_field(method, options)
-      when /url/ then url_field(method, options)
+      when /email/    then email_field(method, options)
+      when /phone/    then telephone_field(method, options)
+      when /url/      then url_field(method, options)
       else
         text_field(method, options)
       end
     end
   end
+
 
   def custom_file_field(method, options = {})
     tag.div(class: "input-group") {
@@ -202,10 +234,10 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
     }
   end
 
+
   def merge_input_options(options, user_options)
     return options if user_options.nil?
 
-    # TODO handle class merging here
     options.merge(user_options)
   end
 end
