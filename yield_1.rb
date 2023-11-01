@@ -4,7 +4,7 @@ module MyModule
       general_array = []
 
       general_array << "1\n  "
-      general_array << yield(secondary_method(struct))
+      general_array << secondary_method(struct)
       # general_array << yield('john', 2, third_param)
       # general_array << yield(block)
       general_array << "\n2\n"
@@ -12,14 +12,12 @@ module MyModule
       general_array.join
     end
 
-    def secondary_method(options)
+    def secondary_method(struct)
       secondary_method = []
 
       secondary_method << '1 '
-      secondary_method << options
+      secondary_method << struct
       secondary_method << ' 2'
-
-      secondary_method.join
     end
   end
 end
@@ -29,9 +27,9 @@ user = User.new name: 'rob'
 
 
 my_object = MyModule.general_method user do |my_param|
-  my_param
+  # my_param.inspect
+  my_param.inspect
   my_param.secondary_method
-  # my_param.split('').map { |char| '-' + char + '-' }
 end
 
 puts my_object
