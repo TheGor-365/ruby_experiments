@@ -1,36 +1,18 @@
-module Builder
+module Build
   class << self
-    def tag(struct, attributes = nil)
-      "<form>#{yield}</form>"
-    end
-
-    def input(struct, **options)
-      options = struct.to_h
-
-      attributes = options.each_with_object({}) do |(name, value), hash|
-        case options[:as]
-        when :text
-          hash[name] = "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
-        else
-          hash[name] = "name='#{name}' type='text' value='#{value}'"
+    def attrs(*attributes)
+      attributes.each do |attribute|
+        define_method "#{attribute}" do
+          self.instance_variable_get "@#{attribute}"
         end
       end
-
-      case options[:as]
-      when :text
-        input << "  <textarea "
-        input << attributes.fetch(key)
-        input << ">"
-        input << params.fetch(key)
-        input << "</textarea>"
-      else
-        input << "  <input "
-        input << attributes.fetch(key)
-        input << (options.map { |option_name, option_value| " #{option_name}='#{option_value}'" })
-        input << ">"
-      end
-      input.join
     end
+  end
+
+  attrs :input
+
+  def initialize(input)
+    @input = input
   end
 end
 
@@ -43,16 +25,16 @@ user = User.new name: 'rob'
 #=> rob
 
 
-form_0 = Builder.tag user do |f|
+form_0 = Build.attrs user do |f|
 end
 
 # <form action="#" method="post"></form>
 
-pp form_0; puts
+pp form_0
 
 
 
-form_0 = Builder.tag user, url: '/users' do |f|
+form_0 = Build.attrs user, url: '/users' do |f|
 end
 
 # <form action="/users" method="post"></form>
@@ -66,7 +48,7 @@ user = User_2.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 
 
-form_1 = Builder.tag user do |f|
+form_1 = Build.attrs user do |f|
   f.input :name
   f.input :job, as: :text
 end
@@ -80,7 +62,7 @@ pp form_1; puts
 
 
 
-# form_2 = Builder.tag user, url: '#' do |f|
+# form_2 = Build.attrs user, url: '#' do |f|
 #   f.input :name, class: 'user-input'
 #   f.input :job
 # end
@@ -94,7 +76,7 @@ pp form_1; puts
 #
 #
 #
-# form_3 = Builder.tag user, url: '/users' do |f|
+# form_3 = Build.attrs user, url: '/users' do |f|
 #   f.input :job, as: :text, rows: 50, cols: 50
 # end
 #
@@ -106,7 +88,7 @@ pp form_1; puts
 #
 #
 #
-# form_4 = Builder.tag user, url: '/users/path' do |f|
+# form_4 = Build.attrs user, url: '/users/path' do |f|
 #   f.input :name
 #   f.input :job, as: :text
 #
@@ -119,7 +101,7 @@ pp form_1; puts
 #
 #
 #
-# form_5 = Builder.tag user do |f|
+# form_5 = Build.attrs user do |f|
 #   f.input :name
 #   f.input :job
 #   f.submit
@@ -137,7 +119,7 @@ pp form_1; puts
 #
 #
 #
-# form_6 = Builder.tag user, url: '#' do |f|
+# form_6 = Build.attrs user, url: '#' do |f|
 #   f.input :name
 #   f.input :job
 #   f.submit 'Wow'
