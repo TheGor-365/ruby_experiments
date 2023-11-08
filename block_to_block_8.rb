@@ -1,11 +1,11 @@
 def foo(&my_block)
-  my_block.call('hi')
+  my_block.call({hi: 'hi'})
 end
 
-m = foo do |message|
-  message
-  message
+message = foo do |m|
+  pp m
+  pp m
 end
 
 
-puts m
+# puts message

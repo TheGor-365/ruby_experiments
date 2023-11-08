@@ -38,8 +38,10 @@ form = Form.form_for :name, user_params do |f|
   f
 end
 
-puts form
-puts
+
+
+puts form; puts
+
 
 
 form = Form.input :job, user_params do |f|
@@ -59,7 +61,7 @@ puts
 # -----------------------------------------------------------------
 
 class HashBacker
-  def self.hack options
+  def self.hack(options)
     @array = []
 
     options.each_pair do |name, value|
@@ -89,11 +91,11 @@ puts
 # -----------------------------------------------------------------
 
 class FormBuilder
-  def initialize params
+  def initialize(params)
     @params = params
   end
 
-  def self.form(&block)
+  def self.form(user, &block)
     form = []
     form << "<form url='/path' method='post'>\n"
     form << yield
@@ -124,7 +126,7 @@ class FormBuilder
     else
       input << '  <input '
       input << attributes.fetch(param_name)
-      options.map { |option_name, value| input << " #{option_name}='#{value}'" }
+      input << (options.map { |option_name, value| " #{option_name}='#{value}'" })
       input << '>'
     end
     input.join
@@ -132,13 +134,14 @@ class FormBuilder
 end
 
 
+
 user = {name: 'rob', job: 'hexlet', gender: 'm'}
 
-user = FormBuilder.form do |f|
+form = FormBuilder.form user do |f|
   f.input :job, class: 'www'
   f.input :name
   f.input :gender, as: :text, rows: 56, cols: 77
   f.input :job, as: :text
 end
 
-puts user
+puts form

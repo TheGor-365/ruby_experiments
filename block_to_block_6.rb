@@ -1,6 +1,6 @@
 module TheModule
   class << self
-    def love_language(options = nil)
+    def language(options = nil)
       final = []
 
       final << "1"
@@ -12,9 +12,13 @@ end
 
 
 
-options = {ruby: 'ruby'}
+options = {
+  rb: 'ruby',
+  py: 'python',
+  js: 'javascript'
+}
 
-result = TheModule.love_language options do |lang|
+result = TheModule.language options do |lang|
   lang
   lang
 end

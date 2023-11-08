@@ -59,22 +59,10 @@ article = Article.new(
   chapter: 'first'
 )
 
-pp article
-
-puts
-
 pp article.title
 pp article.author
-
-puts
-
 pp article.attributes
-
-puts
-
-pp Article.upcased
-
-puts
+pp Article.upcased; puts
 
 
 
@@ -90,11 +78,11 @@ class Post
     @options = options
   end
 
-  def self.downcase(**options, &block)
+  def self.downcase(options, &block)
     pp options
   end
 
-  def self.up(**options)
+  def self.up(options)
     @options = options
     yield
   end
@@ -118,23 +106,26 @@ class Post
 end
 
 
-Post.downcase title: 'post', author: 'Alice', chapter: 'last'
 
-Post.downcase title: 'Post', author: 'Alice', chapter: 'Last' do |p|
+options = { title: 'post', author: 'Alice', chapter: 'last' }
+
+Post.downcase options do |p|
   pp p.back :title
   pp p
-end
+  pp p
+end; puts
 
-Post.up title: 'the-post', author: 'Alice', chapter: 'Last' do |p|
+
+
+Post.up options do |p|
   # pp p.back :title
   pp p
   pp p
-end
+end; puts
 
-puts
+
 
 post = Post.new title: 'the-post', author: 'Alice', chapter: 'Last'
-pp post
 
 post.up do |p|
   pp p

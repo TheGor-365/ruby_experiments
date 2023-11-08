@@ -3,5 +3,10 @@ def wrap_in_tags(tag, text)
   yield html
 end
 
-wrap_in_tags('title', 'Hello') { |html| Mailer.send(html) }
-wrap_in_tags('title', 'Hello') { |html| Page.create(:body => html) }
+wrap_in_tags('title', 'Hello') do |html|
+  pp html
+end
+
+wrap_in_tags('title', 'Hello') do |html|
+  pp html
+end

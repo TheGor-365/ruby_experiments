@@ -38,14 +38,14 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
 
   def hint_text(text)
     return if text.nil?
-    tag.small text, class: "form-text text-muted"
+    tag.small text, class: 'form-text text-muted'
   end
 
 
   def error_text(method)
     return unless has_error?(method)
 
-    tag.div(@object.errors[method].join("<br />").html_safe, class: "invalid-feedback")
+    tag.div(@object.errors[method].join('<br />').html_safe, class: 'invalid-feedback')
   end
 
 
@@ -88,10 +88,10 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
 
   def boolean_input(method, options = {})
     form_group(method, options) do
-      tag.div(class: "custom-control custom-checkbox") do
+      tag.div(class: 'custom-control custom-checkbox') do
         safe_join [
-          check_box(method, merge_input_options({class: "custom-control-input"}, options[:input_html])),
-          label(method, options[:label], class: "custom-control-label"),
+          check_box(method, merge_input_options({class: 'custom-control-input'}, options[:input_html])),
+          label(method, options[:label], class: 'custom-control-label'),
         ]
       end
     end
@@ -121,7 +121,7 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
         value_method,
         text_method,
         options,
-        merge_input_options({class: "#{"custom-select" unless multiple} form-control #{"is-invalid" if has_error?(method)}"},
+        merge_input_options({class: "#{'custom-select' unless multiple} form-control #{'is-invalid' if has_error?(method)}"},
         options[:input_html])
       )
     end
@@ -138,7 +138,7 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
         :to_s,
         :to_s,
         options,
-        merge_input_options({class: "custom-select form-control #{"is-invalid" if has_error?(method)}"},
+        merge_input_options({class: "custom-select form-control #{'is-invalid' if has_error?(method)}"},
         options[:input_html])
       )
     end
@@ -170,8 +170,8 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
         (send(form_builder_method, method, options[:collection], options[:value_method], options[:text_method]) do |b|
           tag.div(class: "custom-control #{custom_class}") {
             safe_join [
-              b.send(input_builder_method, class: "custom-control-input"),
-              b.label(class: "custom-control-label"),
+              b.send(input_builder_method, class: 'custom-control-input'),
+              b.label(class: 'custom-control-label'),
             ]
           }
         end),
@@ -201,7 +201,7 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
             order:      [:month, :day, :year],
             start_year: birthday ? 1900 : Date.today.year - 5,
             end_year:   birthday ? Date.today.year : Date.today.year + 5,
-          }, {data: {date_select: true}})
+          }, {data: { date_select: true }})
         },
       ]
     when :integer then number_field(method, options)
@@ -219,15 +219,15 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
 
 
   def custom_file_field(method, options = {})
-    tag.div(class: "input-group") {
+    tag.div(class: 'input-group') {
       safe_join [
-        tag.div(class: "input-group-prepend") {
-          tag.span("Upload", class: "input-group-text")
+        tag.div(class: 'input-group-prepend') {
+          tag.span('Upload', class: 'input-group-text')
         },
-        tag.div(class: "custom-file") {
+        tag.div(class: 'custom-file') {
           safe_join [
-            file_field(method, options.merge(class: "custom-file-input", data: {controller: "file-input"})),
-            label(method, "Choose file...", class: "custom-file-label"),
+            file_field(method, options.merge(class: 'custom-file-input', data: {controller: 'file-input'})),
+            label(method, 'Choose file...', class: 'custom-file-label'),
           ]
         },
       ]
@@ -237,7 +237,6 @@ class AppFormBuilder < ActionView::Helpers::FormBuilder
 
   def merge_input_options(options, user_options)
     return options if user_options.nil?
-
     options.merge(user_options)
   end
 end

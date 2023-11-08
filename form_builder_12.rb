@@ -33,23 +33,25 @@ class General
   end
 end
 
+
+
 # general = { first: 'one', second: 'two' }
 #
 # general = General.update general do |f|
-#   f
-# end
+#   pp f
+# end; puts
 #
-# puts
+#
 #
 # General.update general, class: 'some-class'
 #
+#
 # puts
+#
 #
 # General.create general do |f|
-#   f
-# end
-#
-# puts
+#   pp f
+# end; puts
 
 
 
@@ -87,15 +89,14 @@ module Major
 end
 
 
-# major = { a: 'aa', b: 'bb' }
-#
-#
-# major_without_block = Major.update major
-#
-# puts major_without_block
-#
-# major_with_block = Major.update major do |f|
-#   f
-# end
-#
-# puts major_with_block
+
+major = { a: 'aa', b: 'bb' }
+major_without_block = Major.update major
+
+puts major_without_block
+
+major_with_block = Major.update major do |f|
+  f
+end
+
+puts major_with_block

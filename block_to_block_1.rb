@@ -1,5 +1,7 @@
 def pick_random_numbers(min, max, limit)
-  limit.times { yield min + rand(max + 1) }
+  limit.times do
+    yield min + rand(max)
+  end
 end
 
 def lottery_style_numbers(&block)
@@ -8,5 +10,5 @@ end
 
 
 lottery_style_numbers do |number|
-  puts "Lucky umber: #{number}"
+  pp number + 1000
 end

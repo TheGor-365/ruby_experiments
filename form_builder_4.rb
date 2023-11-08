@@ -25,7 +25,6 @@ module InputType
       define_method "#{name}" do
         @attributes[name]
       end
-
       define_method "#{name}=" do |value|
         write_attribute(name, value)
       end
@@ -62,21 +61,22 @@ end
 
 form_1 = Form.new(input: 1, area: 2, submit: 3)
 
-pp form_1
-
-puts
-
+pp form_1; puts
 pp form_1.input
 pp form_1.area
 pp form_1.submit
 
+
 puts
+
 
 form_2 = Form.new input: 11 do |f|
   f.input
 end
 
+
 puts
+
 
 puts form_2
 puts form_2.input.inspect

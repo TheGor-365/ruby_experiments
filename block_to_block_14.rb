@@ -13,8 +13,8 @@ end
 test_array = [ 1, 10, 100, 1000, 10000, 100000 ]
 
 show = test_array.my_each do |element|
-  element
-  element
-end
+  pp element.inspect
+  pp element
+end; puts
 
-puts show.inspect
+pp show

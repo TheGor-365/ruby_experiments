@@ -1,11 +1,16 @@
-define_method("example") do |fixed, default = {}|
+define_method('example') do |fixed, default = {}|
   puts fixed
   puts default
 end
 
 example('Hello', key: :value)
 example('Hello')
+
+
+
 puts
+
+
 
 define_method(:my_method) do |foo, bar|
   bar ||= {}

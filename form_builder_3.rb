@@ -1,4 +1,4 @@
-def sum *args
+def sum(*args)
   pp yield(args.sum)
 end
 

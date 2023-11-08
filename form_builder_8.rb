@@ -1,15 +1,15 @@
 class Plane
-  def call(a, b, *attributes)
+  def call(lat, lon, *attributes)
     points = []
 
-    a = { lat: 50 }
-    b = { lon: 87 }
+    lat = { lat: 50 }
+    lon = { lon: 87 }
 
-    attributes << a
-    attributes << b
+    attributes << lat
+    attributes << lon
 
-    points << a
-    points << b
+    points << lat
+    points << lon
 
     points.join(' ')
   end
@@ -20,25 +20,23 @@ end
 class Navigator
   attr_accessor :route_strategy, :type
 
-  def initialize(type=:plane)
+  def initialize(type = :plane)
     @type = type
   end
 
-  def build_route(a, b)
+  def build_route(lat, lon)
     points = []
-    points = route_strategy.new.call(a, b)
-
+    points = route_strategy.new.call(lat, lon)
     return points
   end
 end
 
-pp navigator = Navigator.new
 
-puts
 
-pp navigator.route_strategy = Plane
+navigator = Navigator.new
+navigator.route_strategy = Plane
 
-puts
 
-pp navigator.build_route(:a, :b)
+pp navigator; puts
+pp navigator.build_route(:lat, :lon)
 pp navigator.type

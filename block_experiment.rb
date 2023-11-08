@@ -1,17 +1,26 @@
 3.times do
-  p 'how'.upcase
+  pp 'how'.upcase
 end
+
+
 puts
+
+
 
 3.times do |f|
-  p f.to_s
+  pp f.to_s
 end
+
+
 puts
 
+
+
 def self.next_letter(letter)
-  res = 'a' + letter
-  p res
+  result = 'a' + letter
+  pp result
 end
+
 
 a = 'a'
 a.upcase do |f|

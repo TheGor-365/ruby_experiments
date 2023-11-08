@@ -1,12 +1,13 @@
-def foo(arg1, &block)
-  puts "arg1 is: #{arg1.inspect}"
-  block.call(arg1.reverse)
+def foo(arguments, &block)
+  pp arguments
+  block.call(arguments.reverse)
 end
 
 
-m = foo 'arg1' do |message|
-  message
-  message
-end
+message = foo 'arguments' do |m|
+  pp m
+  pp m
+end; puts
 
-puts m
+
+pp message

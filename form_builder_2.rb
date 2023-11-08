@@ -10,7 +10,7 @@ module HexletCode
       tag << attributes.join
       tag << '>' if !unpaired?(name)
       tag << yield if block_given?
-      unpaired?(name) ? tag << '>' : tag << "</#{name}>"
+      tag << (unpaired?(name) ? '>' : "</#{name}>")
       tag.join
     end
 
@@ -20,6 +20,8 @@ module HexletCode
     end
   end
 end
+
+
 
 module HexletCode
   class << self
@@ -46,8 +48,7 @@ module HexletCode
       @params.each_with_object({}) do |(name, value), hash|
         case field_options[:as]
         when :text
-          hash[name] =
-            "name='#{name}' cols='#{field_options.fetch(:cols, 20)}' rows='#{field_options.fetch(:rows, 40)}'"
+          hash[name] = "name='#{name}' cols='#{field_options.fetch(:cols, 20)}' rows='#{field_options.fetch(:rows, 40)}'"
         else
           hash[name] = "name='#{name}' type='text' value='#{value}'"
         end
@@ -93,12 +94,38 @@ module HexletCode
 end
 
 
-User = Struct.new(:name, :job, :gender, keyword_init: true)
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
+User = Struct.new(:name, :job, keyword_init: true)
+user = User.new name: 'rob'
+
+# puts user.name
+#=> rob
+
+
+form_0 = HexletCode.form_for user do |f|
+end
+
+# <form action="#" method="post"></form>
+
+pp form_0
 
 
 
-html = HexletCode.form_for user do |f|
+form_0 = HexletCode.form_for user, url: '/users' do |f|
+end
+
+# <form action="/users" method="post"></form>
+
+pp form_0; puts
+
+
+
+User_2 = Struct.new(:name, :job, :gender, keyword_init: true)
+user = User_2.new(name: 'rob', job: 'hexlet', gender: 'm')
+
+
+
+form_1 = HexletCode.form_for user do |f|
   f.input :name
   f.input :job, as: :text
 end
@@ -107,10 +134,12 @@ end
 #   <input name="name" type="text" value="rob">
 #   <textarea name="job" cols="20" rows="40">hexlet</textarea>
 # </form>
-puts html
+
+pp form_1; puts
 
 
-# html = HexletCode.form_for user, url: '#' do |f|
+
+# form_2 = HexletCode.form_for user, url: '#' do |f|
 #   f.input :name, class: 'user-input'
 #   f.input :job
 # end
@@ -119,20 +148,24 @@ puts html
 # #   <input name="name" type="text" value="rob" class="user-input">
 # #   <input name="job" type="text" value="hexlet">
 # # </form>
-# print html
+#
+# pp form_2; puts
 #
 #
-# html = HexletCode.form_for user, url: '/users' do |f|
+#
+# form_3 = HexletCode.form_for user, url: '/users' do |f|
 #   f.input :job, as: :text, rows: 50, cols: 50
 # end
 #
 # # <form action="#" method="post">
 # #   <textarea cols="50" rows="50" name="job">hexlet</textarea>
 # # </form>
-# print html
+#
+# pp form_3; puts
 #
 #
-# html = HexletCode.form_for user, url: '/users/path' do |f|
+#
+# form_4 = HexletCode.form_for user, url: '/users/path' do |f|
 #   f.input :name
 #   f.input :job, as: :text
 #
@@ -140,11 +173,12 @@ puts html
 # end
 #
 # # =>  `public_send': undefined method `age' for #<struct User id=nil, name=nil, job=nil> (NoMethodError)
-# print html
+#
+# pp form_4; puts
 #
 #
 #
-# html = HexletCode.form_for user do |f|
+# form_5 = HexletCode.form_for user do |f|
 #   f.input :name
 #   f.input :job
 #   f.submit
@@ -157,10 +191,12 @@ puts html
 # #   <input name="job" type="text" value="hexlet">
 # #   <input type="submit" value="Save">
 # # </form>
-# print html
+#
+# pp form_5; puts
 #
 #
-# html = HexletCode.form_for user, url: '#' do |f|
+#
+# form_6 = HexletCode.form_for user, url: '#' do |f|
 #   f.input :name
 #   f.input :job
 #   f.submit 'Wow'
@@ -173,4 +209,5 @@ puts html
 # #   <input name="job" type="text" value="hexlet">
 # #   <input type="submit" value="Wow">
 # # </form>
-# print html
+#
+# pp form_6; puts

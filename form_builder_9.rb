@@ -32,7 +32,6 @@ class Car
     define_singleton_method "#{name}" do
       @attributes[name]
     end
-
     define_singleton_method "#{name}=" do |value|
       write_attribute(name, value)
     end
@@ -60,22 +59,23 @@ car = Car.new(
   published:  'true'
 )
 
-pp car
+pp car; puts
 pp car.attributes
 pp car.attribute_options
 
+
 puts
+
 
 pp car.attribute :created_at, type: :datetime
 pp car.attribute_options
 
+
 puts
+
 
 car.attributes do |c|
   pp c.attribute :created_at, type: :datetime
-  pp c.attribute_options
+  pp c.attributes :title, type: :string
+  pp c.attribute_options :title, type: :string
 end
-
-puts
-
-pp car
