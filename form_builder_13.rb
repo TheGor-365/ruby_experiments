@@ -2,9 +2,7 @@
 # class Form
 # -----------------------------------------------------------------
 
-class Form
-  attr_reader :input
-
+module Form
   def self.form_for(key, params)
     form = []
 
@@ -91,10 +89,6 @@ puts
 # -----------------------------------------------------------------
 
 class FormBuilder
-  def initialize(params)
-    @params = params
-  end
-
   def self.form(user, &block)
     form = []
     form << "<form url='/path' method='post'>\n"
@@ -104,10 +98,9 @@ class FormBuilder
   end
 
   def self.input(param_name, **options)
-    @params.merge! options
     input = []
 
-    attributes = @params.each_with_object({}) do |(name, value), hash|
+    attributes = options.each_with_object({}) do |(name, value), hash|
       case options[:as]
       when :text
         hash[name] = "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
@@ -121,7 +114,7 @@ class FormBuilder
       input << '  <textarea '
       input << attributes.fetch(param_name)
       input << '>'
-      input << @params.fetch(param_name)
+      input << options.fetch(param_name)
       input << '</textarea>'
     else
       input << '  <input '

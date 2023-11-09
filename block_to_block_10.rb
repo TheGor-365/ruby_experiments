@@ -2,9 +2,9 @@ def foo(arg1)
   yield(arg1.reverse)
 end
 
-m = foo 'arg1' do |message|
-  message
-  message
+message = foo 'arg1' do |m|
+  m
+  m
 end
 
-puts m
+puts message

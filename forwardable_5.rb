@@ -18,6 +18,6 @@ class UserDecorator
 end
 
 
-decorated_user = UserDecorator.new(User.new("John", "Doe"))
+decorated_user = UserDecorator.new(User.new('John', 'Doe'))
 
 puts decorated_user.personal_name

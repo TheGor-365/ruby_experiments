@@ -11,8 +11,5 @@ end
 
 record = RecordCollection.new
 
-pp record.records = [ 4, 5, 6 ]
-
-puts
-
+pp record.records = [ 4, 5, 6 ]; puts
 pp record.record_number(0)

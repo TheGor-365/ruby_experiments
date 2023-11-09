@@ -22,6 +22,7 @@ module HexletCode
 end
 
 
+
 module HexletCode
   class << self
     def form_for(struct, url={}, &block)
@@ -47,6 +48,7 @@ module HexletCode
     end
   end
 end
+
 
 
 User = Struct.new(:name, :job, :gender, keyword_init: true)

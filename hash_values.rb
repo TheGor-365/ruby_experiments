@@ -1,4 +1,4 @@
-@h = {"key"=>"value", "key2"=>"value2"}
+@h = {'key' => 'value', 'key2' => 'value2'}
 
 def returner(key, value = nil)
   @h.fetch(key.to_s, value)
