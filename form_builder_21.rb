@@ -1,6 +1,43 @@
 module Builder
   def self.form_for(struct, url = {})
-    struct
+    "<form action='#{url.fetch(:url, '#')}' method='post'>#{}</form>"
+  end
+
+  module ClassMethods
+    def input(name, options = {})
+      @attribute_options ||= {}
+      @attribute_options[name] = options
+      @attributes = {}
+
+      define_method "#{name}" do
+        @attributes[name]
+      end
+      define_method "#{name}=" do |value|
+        @attributes[name] = value
+      end
+
+      def as(value, input_type)
+        return value if value.nil?
+
+        case input_type
+        when :text then String value
+        end
+      end
+    end
+  end
+
+  def self.included(base)
+    base.attr_reader :input
+    base.extend(ClassMethods)
+  end
+
+  def initialize(params)
+    @attributes = {}
+
+    params.each do |name, value|
+      @attributes[name] = value
+      value.upcase! if self.class.upcased.include? name
+    end
   end
 end
 

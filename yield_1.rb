@@ -1,23 +1,21 @@
 module Builder
   class << self
-    def general_method(struct, url = {})
-      general_array = []
+    def form_for(struct, url = {}, &block)
+      form = []
 
-      general_array << "1\n  "
-      general_array << secondary_method(struct)
-      # general_array << yield('john', 2, third_param)
-      # general_array << yield(block)
-      general_array << "\n2\n"
+      form << "<form>\n  "
+      form << block
+      form << "\n</form>\n"
 
-      general_array.join
+      form.join
     end
 
-    def secondary_method(struct)
-      secondary_method = []
+    def input(struct)
+      input = []
 
-      secondary_method << '1 '
-      secondary_method << struct.to_h
-      secondary_method << ' 2'
+      input << '<input '
+      input << struct.to_h
+      input << '>'
     end
   end
 end
@@ -31,7 +29,7 @@ user = User.new name: 'rob'
 #=> rob
 
 
-form_0 = Builder.general_method user do |f|
+form_0 = Builder.form_for user do |f|
 end
 
 # <form action="#" method="post"></form>
@@ -40,7 +38,7 @@ puts form_0
 
 
 
-form_0 = Builder.general_method user, url: '/users' do |f|
+form_0 = Builder.form_for user, url: '/users' do |f|
 end
 
 # <form action="/users" method="post"></form>
@@ -54,7 +52,7 @@ user = User_2.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 
 
-form_1 = Builder.general_method user do |f|
+form_1 = Builder.form_for user do |f|
   f.input :name
   f.input :name
   f.input :job, as: :text
@@ -69,7 +67,7 @@ puts form_1; puts
 
 
 
-# form_2 = Builder.general_method user, url: '#' do |f|
+# form_2 = Builder.form_for user, url: '#' do |f|
 #   f.input :name, class: 'user-input'
 #   f.input :job
 # end
@@ -83,7 +81,7 @@ puts form_1; puts
 #
 #
 #
-# form_3 = Builder.general_method user, url: '/users' do |f|
+# form_3 = Builder.form_for user, url: '/users' do |f|
 #   f.input :job, as: :text, rows: 50, cols: 50
 # end
 #
@@ -95,7 +93,7 @@ puts form_1; puts
 #
 #
 #
-# form_4 = Builder.general_method user, url: '/users/path' do |f|
+# form_4 = Builder.form_for user, url: '/users/path' do |f|
 #   f.input :name
 #   f.input :job, as: :text
 #
@@ -108,7 +106,7 @@ puts form_1; puts
 #
 #
 #
-# form_5 = Builder.general_method user do |f|
+# form_5 = Builder.form_for user do |f|
 #   f.input :name
 #   f.input :job
 #   f.submit
@@ -126,7 +124,7 @@ puts form_1; puts
 #
 #
 #
-# form_6 = Builder.general_method user, url: '#' do |f|
+# form_6 = Builder.form_for user, url: '#' do |f|
 #   f.input :name
 #   f.input :job
 #   f.submit 'Wow'
