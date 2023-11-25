@@ -1,18 +1,12 @@
 3.times do
   pp 'how'.upcase
-end
-
-
-puts
+end; puts
 
 
 
 3.times do |f|
   pp f.to_s
-end
-
-
-puts
+end; puts
 
 
 

@@ -8,8 +8,9 @@ end
 
 
 
-params = awesome_method do |key, value|
-  "#{key}: #{value}"
+params = awesome_method do |hash|
+  pp hash
+  pp hash
 end
 
 pp params

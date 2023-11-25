@@ -1,13 +1,15 @@
 def foo(arguments, &block)
-  pp arguments
   block.call(arguments.reverse)
 end
 
 
-message = foo 'arguments' do |m|
+arguments = ' arguments'
+
+message = foo arguments do |m|
+  pp m + arguments
   pp m
-  pp m
+  pp m + ' 5'
 end; puts
 
 
-pp message
+message

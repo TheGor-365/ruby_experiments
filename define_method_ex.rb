@@ -4,11 +4,7 @@ define_method('example') do |fixed, default = {}|
 end
 
 example('Hello', key: :value)
-example('Hello')
-
-
-
-puts
+example('Hello'); puts
 
 
 

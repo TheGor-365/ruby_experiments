@@ -1,7 +1,14 @@
 def foo(arg1)
-  block_given? ? yield(arg1) : (puts 'you have to provide a block')
+  block_given? ? yield(arg1) : (pp 'you have to provide a block')
 end
 
-foo 'arg1' do |message|
-  puts message
+
+arg1 = ' arg1'
+
+foo arg1; puts
+
+
+foo arg1 do |message|
+  pp message
+  pp message + arg1
 end

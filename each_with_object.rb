@@ -13,9 +13,6 @@ class Url
 
   def query_params
     if @uri.to_s.include?('?')
-      # @params = uri.query.split('&').map { |el| el.split('=') }.each_with_object({}) do |item, hash|
-      #             hash[item[0].to_sym] = item[1]
-      #           end
       @params = @uri.query.split('&').each_with_object({}) do |item, hash|
         hash[item.split('=')[0].to_sym] = item.split('=')[1]
       end

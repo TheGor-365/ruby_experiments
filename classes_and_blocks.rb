@@ -23,11 +23,7 @@ small_car = Car.new
 
 pp small_car.small_car
 pp big_car.doors
-pp small_car.doors
-
-
-
-puts
+pp small_car.doors; puts
 
 
 
