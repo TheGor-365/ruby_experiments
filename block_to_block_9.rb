@@ -12,4 +12,4 @@ message = foo arguments do |m|
 end; puts
 
 
-message
+pp message

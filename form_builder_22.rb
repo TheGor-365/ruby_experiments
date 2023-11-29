@@ -1,24 +1,35 @@
-module Builder
-  class << self
-    def form_for(struct, url = {}, &block)
-      form = []
+module FormBuilder
+  def self.form_for(object, url = {}, &block)
+    form = []
 
-      form << "<form>\n  "
-      form << block.call(struct)
-      form << "\n</form>\n"
-
-      form.join
+    if url.key?(:url)
+      form << "<form action='#{url.fetch(:url)}' method='post'>"
+      form << block.call(object)
+      form << "</form>"
+    else
+      form << "<form action='#' method='post'>"
+      form << block.call(object)
+      form << "</form>"
     end
-
-    def input(struct)
-      input = []
-
-      input << '<input '
-      input << struct.to_h
-      input << '>'
-    end
+    form.join
   end
+
+  # def input(object)
+  #   params = object.to_h
+  #
+  #   fields = params.each_with_object({}) do |(name, value), hash|
+  #     case params[:as]
+  #     when :text
+  #       hash[name] = "name='#{name}' cols='#{params.fetch(:cols, 20)}' rows='#{params.fetch(:rows, 40)}'"
+  #     else
+  #       hash[name] = "name='#{name}' type='text' value='#{value}'"
+  #     end
+  #   end
+  # end
 end
+
+
+
 
 
 
@@ -29,7 +40,7 @@ user = User.new name: 'rob'
 #=> rob
 
 
-form_0 = Builder.form_for user do |f|
+form_0 = FormBuilder.form_for user do |f|
 end
 
 # <form action="#" method="post"></form>
@@ -38,7 +49,7 @@ puts form_0
 
 
 
-form_0 = Builder.form_for user, url: '/users' do |f|
+form_0 = FormBuilder.form_for user, url: '/users' do |f|
 end
 
 # <form action="/users" method="post"></form>
@@ -52,7 +63,7 @@ user = User_2.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 
 
-form_1 = Builder.form_for user do |f|
+form_1 = FormBuilder.form_for user do |f|
   f.input :name
   f.input :name
   f.input :job, as: :text
@@ -67,7 +78,7 @@ puts form_1; puts
 
 
 
-# form_2 = Builder.form_for user, url: '#' do |f|
+# form_2 = FormBuilder.form_for user, url: '#' do |f|
 #   f.input :name, class: 'user-input'
 #   f.input :job
 # end
@@ -81,7 +92,7 @@ puts form_1; puts
 #
 #
 #
-# form_3 = Builder.form_for user, url: '/users' do |f|
+# form_3 = FormBuilder.form_for user, url: '/users' do |f|
 #   f.input :job, as: :text, rows: 50, cols: 50
 # end
 #
@@ -93,7 +104,7 @@ puts form_1; puts
 #
 #
 #
-# form_4 = Builder.form_for user, url: '/users/path' do |f|
+# form_4 = FormBuilder.form_for user, url: '/users/path' do |f|
 #   f.input :name
 #   f.input :job, as: :text
 #
@@ -106,7 +117,7 @@ puts form_1; puts
 #
 #
 #
-# form_5 = Builder.form_for user do |f|
+# form_5 = FormBuilder.form_for user do |f|
 #   f.input :name
 #   f.input :job
 #   f.submit
@@ -124,7 +135,7 @@ puts form_1; puts
 #
 #
 #
-# form_6 = Builder.form_for user, url: '#' do |f|
+# form_6 = FormBuilder.form_for user, url: '#' do |f|
 #   f.input :name
 #   f.input :job
 #   f.submit 'Wow'

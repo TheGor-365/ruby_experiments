@@ -5,7 +5,7 @@ end
 message = foo do |m|
   pp m
   pp m
-end
+end; puts
 
 
-# puts message
+puts message
