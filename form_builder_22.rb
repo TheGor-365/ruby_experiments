@@ -1,31 +1,26 @@
 module FormBuilder
-  def self.form_for(object, url = {}, &block)
+  def self.form_for(struct, url = {}, &block)
     form = []
 
-    if url.key?(:url)
-      form << "<form action='#{url.fetch(:url)}' method='post'>"
-      form << block.call(object)
-      form << "</form>"
-    else
-      form << "<form action='#' method='post'>"
-      form << block.call(object)
-      form << "</form>"
-    end
-    form.join
+    form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>" : "<form action='#' method='post'>")
+    form << block.call(struct)
+    form << "</form>"
+    form
   end
 
-  # def input(object)
-  #   params = object.to_h
-  #
-  #   fields = params.each_with_object({}) do |(name, value), hash|
-  #     case params[:as]
-  #     when :text
-  #       hash[name] = "name='#{name}' cols='#{params.fetch(:cols, 20)}' rows='#{params.fetch(:rows, 40)}'"
-  #     else
-  #       hash[name] = "name='#{name}' type='text' value='#{value}'"
-  #     end
-  #   end
-  # end
+  def self.input(struct, **options)
+    struct
+    # params = object.to_h
+    #
+    # fields = params.each_with_object({}) do |(name, value), hash|
+    #   case params[:as]
+    #   when :text
+    #     hash[name] = "name='#{name}' cols='#{params.fetch(:cols, 20)}' rows='#{params.fetch(:rows, 40)}'"
+    #   else
+    #     hash[name] = "name='#{name}' type='text' value='#{value}'"
+    #   end
+    # end
+  end
 end
 
 
@@ -45,7 +40,7 @@ end
 
 # <form action="#" method="post"></form>
 
-puts form_0
+pp form_0
 
 
 
@@ -54,7 +49,7 @@ end
 
 # <form action="/users" method="post"></form>
 
-puts form_0; puts
+pp form_0; puts
 
 
 
@@ -62,11 +57,10 @@ User_2 = Struct.new(:name, :job, :gender, keyword_init: true)
 user = User_2.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 
-
 form_1 = FormBuilder.form_for user do |f|
-  f.input :name
-  f.input :name
-  f.input :job, as: :text
+  # f.input :name
+  # f.input :job, as: :text
+  f
 end
 
 # <form action="#" method="post">
@@ -74,7 +68,7 @@ end
 #   <textarea name="job" cols="20" rows="40">hexlet</textarea>
 # </form>
 
-puts form_1; puts
+pp form_1; puts
 
 
 
