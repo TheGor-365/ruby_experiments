@@ -4,10 +4,9 @@ module Builder
   def self.form_for(struct, url = {}, &block)
     form = []
 
-    pp struct.to_h
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>" : "<form action='#' method='post'>")
     # form << block.call(struct)
-    form << yield(struct.to_h)
+    form << yield(struct)
     form << "</form>"
     form
   end
@@ -19,10 +18,11 @@ def input(key, **options)
   input = []
   value = options[key]
 
-
-  input << fetch(key, 'no key')
-  input << options.values.join if options.present?
-  input
+  # input << self.to_h.fetch(key, 'no key')
+  # input << self.to_h.values
+  input << key
+  # input << options.values.join if options.present?
+  input.inspect
 end
 
 
