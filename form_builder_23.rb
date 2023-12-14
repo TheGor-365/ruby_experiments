@@ -1,6 +1,5 @@
 require "active_support/all"
 
-# generates HTML forms
 module HexletCode
   def self.form_for(struct, url = {}, &block)
     form = []
@@ -26,15 +25,6 @@ def input(attr_name, **attributes)
 end
 
 
-def submit(*button_name)
-  submit = []
-  submit << "  <input type='submit'"
-  submit << " name='#{button_name.present? ? button_name.join : "Save"}'"
-  submit << '>'
-  submit.join
-end
-
-
 def constructor(attr_name, **attributes)
   public_send(attr_name) unless @params[attr_name]
   field = []
@@ -55,6 +45,15 @@ def constructor(attr_name, **attributes)
     field << '>'
   end
   field.join
+end
+
+
+def submit(*button_name)
+  submit = []
+  submit << "  <input type='submit'"
+  submit << " name='#{button_name.present? ? button_name.join : "Save"}'"
+  submit << '>'
+  submit.join
 end
 
 

@@ -1,7 +1,6 @@
 module FormBuilder
   def self.form_for(struct, url = {}, &block)
     form = []
-
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>" : "<form action='#' method='post'>")
     form << block.call(struct)
     form << "</form>"

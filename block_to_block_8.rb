@@ -3,9 +3,7 @@ require 'active_support/all'
 module Builder
   def self.form_for(struct, url = {}, &block)
     form = []
-
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>" : "<form action='#' method='post'>")
-    # form << block.call(struct)
     form << yield(struct)
     form << "</form>"
     form
