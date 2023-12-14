@@ -4,7 +4,6 @@ require "active_support/all"
 module HexletCode
   def self.form_for(struct, url = {}, &block)
     form = []
-
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
     form << yield(struct)
     form << "\n</form>"
@@ -14,16 +13,16 @@ end
 
 public
 
-def input(param_name, **field_options)
-  @params = self.to_h.merge! field_options
+def input(attr_name, **attributes)
+  @params = self.to_h.merge!(attributes)
 
   @input_attrs = @params.each_with_object({}) do |(name, value), hash|
-    case field_options[:as]
-    when :text then hash[name] = "name='#{name}' cols='#{field_options.fetch(:cols, 20)}' rows='#{field_options.fetch(:rows, 40)}'"
+    case attributes[:as]
+    when :text then hash[name] = "name='#{name}' cols='#{attributes.fetch(:cols, 20)}' rows='#{attributes.fetch(:rows, 40)}'"
     else hash[name] = "name='#{name}' type='text' value='#{value}'"
     end
   end
-  field_constructor(param_name, **field_options)
+  constructor(attr_name, **attributes)
 end
 
 
@@ -36,33 +35,34 @@ def submit(*button_name)
 end
 
 
-def field_constructor(param_name, **field_options)
-  public_send(param_name) unless @params[param_name]
+def constructor(attr_name, **attributes)
+  public_send(attr_name) unless @params[attr_name]
   field = []
 
-  case field_options[:as]
+  case attributes[:as]
   when :text
-    field << label(param_name)
+    field << label(attr_name)
     field << '  <textarea '
-    field << @input_attrs.fetch(param_name)
+    field << @input_attrs.fetch(attr_name)
     field << '>'
-    field << @params.fetch(param_name)
+    field << @params.fetch(attr_name)
     field << '</textarea>'
   else
-    field << label(param_name)
+    field << label(attr_name)
     field << '  <input '
-    field << @input_attrs.fetch(param_name)
-    field_options.map { |option_name, value| field << " #{option_name}='#{value}'" }
+    field << @input_attrs.fetch(attr_name)
+    field << (attributes.map { |option_name, value| " #{option_name}='#{value}'" })
     field << '>'
-  end; field.join
+  end
+  field.join
 end
 
 
-def label(param_name)
+def label(attr_name)
   label = []
-
-  label << "  <label for='#{param_name}'"
-  label << param_name.to_s.capitalize
+  label << "  <label for='#{attr_name}'"
+  label << '>'
+  label << attr_name.to_s.capitalize
   label << "</label>\n"
   label.join
 end
@@ -73,9 +73,6 @@ end
 
 User = Struct.new(:name, :job, keyword_init: true)
 user = User.new name: 'rob'
-
-# puts user.name
-#=> rob
 
 
 form_0 = HexletCode.form_for user do |f|
