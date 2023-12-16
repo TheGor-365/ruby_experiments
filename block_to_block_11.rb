@@ -1,14 +1,19 @@
-def foo(arg1)
-  block_given? ? yield(arg1) : (pp 'you have to provide a block')
+def foo(args)
+  result = []
+  args.each do |arg|
+    result << (block_given? ? yield(arg) : ('you have to provide a block'))
+  end
+  result
 end
 
 
-arg1 = ' arg1'
-
-foo arg1; puts
+arg = [:some, 'arg']
 
 
-foo arg1 do |message|
+res = foo arg do |message|
   pp message
-  pp message + arg1
-end
+  pp message
+end; puts
+
+
+pp res

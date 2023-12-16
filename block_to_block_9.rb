@@ -1,14 +1,18 @@
 def foo(arguments, &block)
-  block.call(arguments.reverse)
+  @result = []
+  arguments.each do |argument|
+    @result << block.call(argument)
+  end
+  @result
 end
 
 
-arguments = ' arguments'
+arguments = ['arguments', 's', :something, { key: :value }]
 
 message = foo arguments do |m|
-  pp m + arguments
   pp m
-  pp m + ' 5'
+  pp m
+  pp m
 end; puts
 
 

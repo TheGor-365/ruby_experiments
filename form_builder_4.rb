@@ -1,5 +1,5 @@
 module InputType
-  def initialize attrs = {}
+  def initialize(attrs = {})
     @attributes = {}
 
     self.class.attribute_options.each do |name, options|
@@ -22,9 +22,10 @@ module InputType
       @attribute_options ||= {}
       @attribute_options[name] = options
 
-      define_method "#{name}" do
+      define_method name do
         @attributes[name]
       end
+
       define_method "#{name}=" do |value|
         write_attribute(name, value)
       end
@@ -59,7 +60,11 @@ class Form
 end
 
 
-form_1 = Form.new(input: 1, area: 2, submit: 3)
+form_1 = Form.new(
+  input: 1,
+  area: 2,
+  submit: 3
+)
 
 pp form_1; puts
 pp form_1.input

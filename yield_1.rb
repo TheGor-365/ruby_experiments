@@ -1,24 +1,27 @@
 module Builder
-  class << self
-    def form_for(struct, url = {}, &block)
-      form = []
-
-      form << "<form>\n  "
-      form << block.call(struct)
-      form << "\n</form>\n"
-
-      form.join
-    end
-
-    def input(struct)
-      input = []
-
-      input << '<input '
-      input << struct.to_h
-      input << '>'
-    end
+  def self.form_for(struct, url = {}, &block)
+    form = []
+    form << "<form>\n  "
+    # struct.each do |item|
+    #   form << block.call(item)
+    # end
+    form << block.call(struct)
+    form << "\n</form>\n"
+    form.join
   end
 end
+
+public
+
+def input(attr_name, **options)
+  params = self.to_h.merge!(options)
+  input = []
+  input << '<input '
+  input << params
+  input << '>'
+  input
+end
+
 
 
 

@@ -9,16 +9,6 @@ module FormBuilder
 
   def self.input(struct, **options)
     struct
-    # params = object.to_h
-    #
-    # fields = params.each_with_object({}) do |(name, value), hash|
-    #   case params[:as]
-    #   when :text
-    #     hash[name] = "name='#{name}' cols='#{params.fetch(:cols, 20)}' rows='#{params.fetch(:rows, 40)}'"
-    #   else
-    #     hash[name] = "name='#{name}' type='text' value='#{value}'"
-    #   end
-    # end
   end
 end
 
