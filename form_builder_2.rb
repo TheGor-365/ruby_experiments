@@ -4,8 +4,8 @@ module HexletCode
   class Tag
     def self.build(name, **attributes)
       attributes = attributes.map { |attr, value| " #{attr}='#{value}'" }
-      tag = []
 
+      tag = []
       tag << "<#{name}"
       tag << attributes.join
       tag << '>' if !unpaired?(name)
@@ -24,74 +24,64 @@ end
 
 
 module HexletCode
-  class << self
-    def form_for(struct, url = {}, &block)
-      @params = struct.to_h
-      form = []
+  def self.form_for(struct, url = {}, &block)
+    form = []
+    form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
+    # form << yield(struct) if block_given?
+    form << yield(struct.to_h.each_with_object({}) { |(name, value), hash| hash[name] = value })
+    form << "\n</form>"
+    form.join
+  end
+end
 
-      if url.key?(:url)
-        form << "<form action='#{url.fetch(:url)}' method='post'>\n"
-        form << yield if block_given?
-        form << "\n</form>\n"
+public
+
+def input(attr_name, **options)
+  params = self.merge!(options)
+  input = []
+
+  attributes = params.each_with_object({}) do |(name, value), hash|
+    case options[:as]
+    when :text then hash[name] = "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
+    else hash[name] = "name='#{name}' type='text' value='#{value}'"
+    end
+  end
+
+  params.map do |name, value|
+    if name == attr_name
+      case params[:as]
+      when :text
+        input << label(attr_name)
+        input << '  <textarea '
+        input << attributes.fetch(attr_name)
+        input << '>'
+        input << params.fetch(attr_name)
+        input << '</textarea>'
       else
-        form << "<form action='#' method='post'>\n"
-        form << yield if block_given?
-        form << "\n</form>\n"
+        input << label(attr_name)
+        input << '  <input '
+        input << attributes.fetch(attr_name)
+        input << (options.map { |name, value| " #{name}='#{value}'" })
+        input << '>'
       end
-      form.join
-    end
-
-    def input(param_name, **field_options)
-      @params.merge! field_options
-      input = []
-
-      @params.each_with_object({}) do |(name, value), hash|
-        case field_options[:as]
-        when :text
-          hash[name] = "name='#{name}' cols='#{field_options.fetch(:cols, 20)}' rows='#{field_options.fetch(:rows, 40)}'"
-        else
-          hash[name] = "name='#{name}' type='text' value='#{value}'"
-        end
-      end
-
-      @params.map do |name, value|
-        if name == param_name
-          case field_options[:as]
-          when :text
-            input << label(param_name)
-            input << "  <textarea "
-            input << "name='#{name}' cols='#{field_options.fetch(:cols, 20)}' rows='#{field_options.fetch(:rows, 40)}'"
-            input << ">"
-            input << @params.fetch(param_name)
-            input << "</textarea>"
-          else
-            input << label(param_name)
-            input << "  <input "
-            input << "name='#{name}' type='text' value='#{value}'"
-            input << field_options.map { |option_name, value| " #{option_name}='#{value}'" }
-            input << ">"
-          end
-        end
-      end
-      input.join
-    end
-
-    def submit(*button_name)
-      submit = []
-
-      submit << "  <input type='submit'"
-      submit << " name='#{button_name.present? ? button_name.join : 'Save'}'>"
-    end
-
-    def label(param_name)
-      label = []
-
-      label << "  <label for='#{param_name.to_s}'>"
-      label << param_name.to_s.capitalize
-      label << "</label>\n"
     end
   end
 end
+
+def submit(*button_name)
+  submit = []
+  submit << "  <input type='submit'"
+  submit << " name='#{button_name.present? ? button_name.join : 'Save'}'>"
+end
+
+def label(attr_name)
+  label = []
+  label << "  <label for='#{attr_name.to_s}'>"
+  label << attr_name.to_s.capitalize
+  label << "</label>\n"
+end
+
+
 
 
 

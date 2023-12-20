@@ -1,52 +1,44 @@
 module Builder
-  def self.form_for(struct, url = {})
-    "<form action='#{url.fetch(:url, '#')}' method='post'>#{}</form>"
-  end
-
-  module ClassMethods
-    def input(name, options = {})
-      @attribute_options ||= {}
-      @attribute_options[name] = options
-      @attributes = {}
-
-      define_method "#{name}" do
-        @attributes[name]
-      end
-      define_method "#{name}=" do |value|
-        @attributes[name] = value
-      end
-
-      def as(value, input_type)
-        return value if value.nil?
-
-        case input_type
-        when :text then String value
-        end
-      end
-    end
-  end
-
-  def self.included(base)
-    base.attr_reader :input
-    base.extend(ClassMethods)
-  end
-
-  def initialize(params)
-    @attributes = {}
-
-    params.each do |name, value|
-      @attributes[name] = value
-      value.upcase! if self.class.upcased.include? name
-    end
+  def self.form_for(struct, url = {}, &block)
+    form = []
+    form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
+    form << yield(struct)
+    form << "\n</form>"
+    form
   end
 end
+
+public
+
+def input(name, options = {})
+  input = []
+  # self.to_h.each_with_object([]) do |item, acc|
+  #   if self.to_h.include?(name)
+  #     input << { item[0] => item[1] }
+  #   end
+  # end
+  # input << self.to_h.fetch(name)
+  Builder.form_for self.to_h do |f|
+    if f.include?(name)
+      input << f.fetch(name, 'no key')
+    end
+    # f.each_with_object([]) do |item, acc|
+    #   if item[0] == name
+    #     input << { item[0] => item[1] }
+    #   end
+    # end
+  end
+  input
+end
+
+
 
 
 
 User = Struct.new(:name, :job, keyword_init: true)
 user = User.new name: 'rob'
 
-# puts user.name
+# puts user.nameitem[0]
 #=> rob
 
 

@@ -19,10 +19,8 @@ module Builder
 
       attributes = params.each_with_object({}) do |(name, value), hash|
         case params[:as]
-        when :text
-          hash[name] = "name='#{name}' cols='#{params.fetch(:cols, 20)}' rows='#{params.fetch(:rows, 40)}'"
-        else
-          hash[name] = "name='#{name}' type='text' value='#{value}'"
+        when :text then hash[name] = "name='#{name}' cols='#{params.fetch(:cols, 20)}' rows='#{params.fetch(:rows, 40)}'"
+        else hash[name] = "name='#{name}' type='text' value='#{value}'"
         end
       end
 
