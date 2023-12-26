@@ -1,11 +1,14 @@
 module Builder
   def self.form_for(struct, url = {}, &block)
     form = []
-    form << "<form>\n  "
-    # struct.each do |item|
-    #   form << block.call(item)
+    form << '<form>  '
+    # struct.to_h.each do |item|
+    #   form << yield(item)
     # end
-    form << block.call(struct)
+    # form << yield(struct.to_h)
+    form << yield(struct.to_h)
+    # form << yield(struct.to_h.each { |name, value| name })
+    # form << yield(struct.to_h.each { |name, value| name })
     form << "\n</form>\n"
     form.join
   end
@@ -14,12 +17,18 @@ end
 public
 
 def input(attr_name, **options)
-  params = self.to_h.merge!(options)
+  params = self
   input = []
-  input << '<input '
-  input << params
-  input << '>'
-  input
+
+  Builder.form_for self do |f|
+    input.push(f.fetch(attr_name))
+  end
+
+  # params.each do |name, value|
+  #   input << name
+  # end
+
+  input.inspect
 end
 
 
