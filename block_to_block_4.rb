@@ -1,27 +1,23 @@
-def awesome_method(hash)
-  @result = []
-
-  hash.each do |key, value|
-    @result << yield(key)
-    @result << yield(value)
-    @result << yield({key => value})
-  end
-  @result
+def awesome_method(options, *result)
+  options.each do |key, value|
+    result << yield(value) if key.length <= 3
+  end; result
 end
 
 
-hash = {
-  a: 'apple',
-  b: 'banana',
-  c: 'cookie'
+options = {
+  aa:    'apple',
+  bbb:   'banana',
+  cccc:  'cookie',
+  color: 'white'
 }
 
 
 
-params = awesome_method hash do |item|
-  pp item
-  pp item
-end; puts
+params = awesome_method options do |item|
+  item
+  item
+end
 
 
 

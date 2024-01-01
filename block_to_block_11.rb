@@ -1,19 +1,14 @@
-def foo(args)
-  result = []
-  args.each do |arg|
-    result << (block_given? ? yield(arg) : ('you have to provide a block'))
-  end
-  result
+def show_items(arguments, *result)
+  arguments.each do |argument|
+    result << (block_given? ? yield(argument) : ('you have to provide a block')) if argument.kind_of?(Symbol)
+  end; result
 end
 
+arguments = [:some, :some_else, 'argument']
 
-arg = [:some, 'arg']
+result = show_items arguments do |message|
+  message
+  message
+end
 
-
-res = foo arg do |message|
-  pp message
-  pp message
-end; puts
-
-
-pp res
+pp result

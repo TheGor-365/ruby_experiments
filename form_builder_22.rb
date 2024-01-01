@@ -1,14 +1,17 @@
 module FormBuilder
-  def self.form_for(struct, url = {}, &block)
-    form = []
+  def self.form_for(struct, url = {}, *form,  &block)
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>" : "<form action='#' method='post'>")
-    form << block.call(struct)
-    form << "</form>"
-    form
+    form << yield(struct)
+    form << "</form>"; form
   end
 
-  def self.input(struct, **options)
-    struct
+  def self.input(struct, *input, **options)
+    struct.members.each do |member|
+      # input << struct.to_h.fetch(member)
+      FormBuilder.form_for struct do |f|
+        input << f.fetch(struct.member)
+      end
+    end
   end
 end
 

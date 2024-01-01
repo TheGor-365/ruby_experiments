@@ -1,12 +1,10 @@
 require 'active_support/all'
 
 module Builder
-  def self.form_for(struct, url = {}, &block)
-    form = []
+  def self.form_for(struct, url = {}, *form,  &block)
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>" : "<form action='#' method='post'>")
     form << yield(struct)
-    form << "</form>"
-    form
+    form << "</form>"; form
   end
 end
 
@@ -16,10 +14,7 @@ def input(key, **options)
   input = []
   value = options[key]
 
-  # input << self.to_h.fetch(key, 'no key')
-  # input << self.to_h.values
-  input << key
-  # input << options.values.join if options.present?
+  input << self.to_h.fetch(key, 'no key')
   input.inspect
 end
 
@@ -57,6 +52,7 @@ user = User_2.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 
 form_1 = Builder.form_for user do |f|
+  f.input :name
   f.input :name
   f.input :job, as: :text
 end

@@ -1,32 +1,16 @@
 module Builder
-  def self.form_for(struct, url = {}, &block)
-    form = []
+  def self.form_for(struct, url = {}, *form, &block)
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
     form << yield(struct)
-    form << "\n</form>"
-    form
+    form << "\n</form>"; form
   end
 end
 
 public
 
-def input(name, options = {})
-  input = []
-  # self.to_h.each_with_object([]) do |item, acc|
-  #   if self.to_h.include?(name)
-  #     input << { item[0] => item[1] }
-  #   end
-  # end
-  # input << self.to_h.fetch(name)
+def input(name, *input, **options)
   Builder.form_for self.to_h do |f|
-    if f.include?(name)
-      input << f.fetch(name, 'no key')
-    end
-    # f.each_with_object([]) do |item, acc|
-    #   if item[0] == name
-    #     input << { item[0] => item[1] }
-    #   end
-    # end
+    input << f.fetch(name, 'no key')
   end
   input
 end
