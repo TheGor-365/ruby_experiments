@@ -2,47 +2,44 @@
 # class Form
 # -----------------------------------------------------------------
 
+
 module Form
-  def self.form_for(key, params)
-    form = []
-    form << "<form action='#' method='post'>"
-    form << "\n  #{yield input(key, params)}\n"
-    form << '</form>'
+  def self.form_for(struct, *form)
+    some = ''
+    form << "<form action='#' method='post'>\n"
+    form << yield(struct)
+    # struct.to_h.each_with_object({}) do |(name, value), hash|
+    #   some = (name)
+    # end
+    # form << yield(some)
+    form << "</form>"
     form.join
   end
+end
 
-  def self.input(key, params, **options)
-    input = []
+public
 
-    attributes = params.each_with_object({}) do |(name, value), hash|
-      hash[name] = "name='#{name}' type='text' value='#{value}'"
-    end
+def input(key, *input, **options)
+  # attributes = self.each_with_object({}) do |(name, value), hash|
+  #   hash[name] = "name='#{name}' type='text' value='#{value}'"
+  # end
+  pp key
 
-    input << '<input '
-    input << attributes.fetch(key)
-    input << options.values if options
-    input << '>'
-    input.join
-  end
+  # input << attributes.fetch(key)
+  input << '  <input '
+  input << key
+  input << ">\n"
 end
 
 
 
+User = Struct.new(:name, :job, :gender, keyword_init: true)
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
-user_params = { name: 'rob', job: 'hexlet', gender: 'm' }
-
-form = Form.form_for :name, user_params do |f|
-  f
-end
-
-
-
-puts form; puts
-
-
-
-form = Form.input :job, user_params do |f|
-  f
+form = Form.form_for user do |f|
+  f.input :name
+  f.input :name
+  f.input :job, as: :text
 end
 
 puts form
@@ -50,30 +47,32 @@ puts form
 
 
 
-puts
-p '-' * 100
-puts
+puts; p '-' * 10; puts
+
+
+
 
 
 # -----------------------------------------------------------------
 # class HashBacker
 # -----------------------------------------------------------------
 
-class HashBacker
-  def self.hack(options)
-    @array = []
 
+class HashBacker
+  def self.form_for(options, *array)
     options.each_pair do |name, value|
-      @array << value if yield value
+      array << value if yield value
     end
-    @array.join(' ')
+    array.join(' ')
   end
 end
 
+
 user_params = { name: 'rob', job: 'hexlet', gender: 'm' }
 
-hash_backer = HashBacker.hack user_params do |element|
-  element
+hash_backer = HashBacker.form_for user_params do |f|
+  f
+  f
 end
 
 pp hash_backer
@@ -81,14 +80,16 @@ pp hash_backer
 
 
 
-puts
-p '-' * 100
-puts
+puts; p '-' * 10; puts
+
+
+
 
 
 # -----------------------------------------------------------------
 # class FormBuilder
 # -----------------------------------------------------------------
+
 
 class FormBuilder
   def self.form(user, &block)
