@@ -2,7 +2,6 @@ module FormBuilder
   def self.form_for(options, *form)
     form << "<form>\n"
     form << yield(options)
-    # options.each { |name, value| form << yield(value) }
     form << "</form>\n"
     form.join
   end

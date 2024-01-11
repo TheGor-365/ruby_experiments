@@ -56,9 +56,6 @@ pp result; puts
 
 class FormBuilder
   def self.form_for(params, *form)
-    # params.each do |key, value|
-    #   form << value if yield(key)
-    # end; form
     yield(params)
   end
 end

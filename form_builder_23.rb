@@ -1,8 +1,7 @@
 require "active_support/all"
 
 module HexletCode
-  def self.form_for(struct, url = {}, &block)
-    form = []
+  def self.form_for(struct, url = {}, *form, &block)
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
     form << yield(struct)
     form << "\n</form>"
@@ -25,9 +24,8 @@ def input(attr_name, **attributes)
 end
 
 
-def constructor(attr_name, **attributes)
+def constructor(attr_name, *field, **attributes)
   public_send(attr_name) unless @params[attr_name]
-  field = []
 
   case attributes[:as]
   when :text

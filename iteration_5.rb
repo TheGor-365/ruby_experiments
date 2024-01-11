@@ -11,6 +11,7 @@ def input(param, *input)
 end
 
 
+
 array = %w[ one two three four ]
 
 result = FormBuilder.form_for array do |f|

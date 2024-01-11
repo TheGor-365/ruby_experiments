@@ -2,7 +2,8 @@ module Builder
   def self.form_for(struct, url = {}, *form, &block)
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
     form << yield(struct)
-    form << "\n</form>"; form
+    form << "\n</form>"
+    form
   end
 end
 

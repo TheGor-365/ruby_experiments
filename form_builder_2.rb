@@ -34,12 +34,9 @@ pp HexletCode::Tag.build('div'); puts
 
 
 module HexletCode
-  def self.form_for(struct, url = {}, &block)
-    form = []
+  def self.form_for(struct, url = {}, *form, &block)
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
     form << yield(struct) if block_given?
-    # form << yield(struct.to_h.each_pair { |pair| { pair[0] => pair[1] }})
-    # form << yield(struct.to_h.each_with_object([]) { |(name, value), array| array << { name => value }})
     form << "\n</form>"
     form
   end
@@ -47,43 +44,12 @@ end
 
 public
 
-def input(attr_name, **options)
+def input(attr_name, *input, **options)
   params = self.to_h.merge!(options)
-  input = []
-
-  # attributes = params.each_with_object({}) do |(name, value), hash|
-  #   if name == attr_name
-  #     case options[:as]
-  #     when :text
-  #       hash[name] = "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
-  #     else
-  #       hash[name] = "name='#{name}' type='text' value='#{value}'"
-  #     end
-  #   end
-  # end
-  #
-  # attributes = params.each do |key, value|
-  #   input << { key => value } if key.equal?(attr_name)
-  # end
 
   HexletCode.form_for self.to_h do |f|
     f.each { |name, value| input << value if f.include?(attr_name) }
   end
-
-  # if options[:as]
-  #   input << label(attr_name)
-  #   input << '  <textarea '
-  #   input << attributes.fetch(attr_name)
-  #   input << '>'
-  #   input << params.fetch(attr_name)
-  #   input << '</textarea>'
-  # else
-  #   input << label(attr_name)
-  #   input << '  <input '
-  #   input << attributes.fetch(attr_name)
-  #   input << (options.map { |name, value| " #{name}='#{value}'" })
-  #   input << '>'
-  # end
   input
 end
 

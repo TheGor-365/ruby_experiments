@@ -34,7 +34,7 @@ def my_try(&block)
 end
 
 def do_raise(exception)
-  if ($escape)
+  if $escape
     $escape.pop.call exception
   else
     exit(1)

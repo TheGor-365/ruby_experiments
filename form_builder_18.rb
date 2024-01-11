@@ -36,8 +36,7 @@ end
 
 
 module HexletCode
-  def self.form_for(struct, url = {}, &block)
-    form = []
+  def self.form_for(struct, url = {}, *form, &block)
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
     form << yield(struct)
     form << "\n</form>"
@@ -47,9 +46,8 @@ end
 
 public
 
-def input(attr_name, **options)
+def input(attr_name, *input, **options)
   params = self.to_h.merge!(options)
-  input  = []
 
   attributes = params.each_with_object({}) do |(name, value), hash|
     case options[:as]
@@ -71,7 +69,7 @@ def input(attr_name, **options)
     input << (options.map { |attr_name, value| " #{attr_name}='#{value}'" })
     input << '>'
   end
-  input.join
+  input
 end
 
 

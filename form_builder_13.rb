@@ -5,13 +5,8 @@
 
 module Form
   def self.form_for(struct, *form)
-    some = ''
     form << "<form action='#' method='post'>\n"
     form << yield(struct)
-    # struct.to_h.each_with_object({}) do |(name, value), hash|
-    #   some = (name)
-    # end
-    # form << yield(some)
     form << "</form>"
     form.join
   end
@@ -20,12 +15,7 @@ end
 public
 
 def input(key, *input, **options)
-  # attributes = self.each_with_object({}) do |(name, value), hash|
-  #   hash[name] = "name='#{name}' type='text' value='#{value}'"
-  # end
   pp key
-
-  # input << attributes.fetch(key)
   input << '  <input '
   input << key
   input << ">\n"
@@ -54,28 +44,28 @@ puts; p '-' * 10; puts
 
 
 # -----------------------------------------------------------------
-# class HashBacker
+# class Builder
 # -----------------------------------------------------------------
 
 
-class HashBacker
-  def self.form_for(options, *array)
+class Builder
+  def self.form_for(options, *form)
     options.each_pair do |name, value|
-      array << value if yield value
+      form << value if yield value
     end
-    array.join(' ')
+    form.join(' ')
   end
 end
 
 
-user_params = { name: 'rob', job: 'hexlet', gender: 'm' }
+params = { name: 'rob', job: 'hexlet', gender: 'm' }
 
-hash_backer = HashBacker.form_for user_params do |f|
+result = Builder.form_for params do |f|
   f
   f
 end
 
-pp hash_backer
+pp result
 
 
 
@@ -92,8 +82,7 @@ puts; p '-' * 10; puts
 
 
 class FormBuilder
-  def self.form(user, &block)
-    form = []
+  def self.form(user, *form, &block)
     form << "<form url='/path' method='post'>\n"
     form << yield
     form << "\n</form>"
@@ -103,9 +92,7 @@ end
 
 public
 
-def input(attr_name, **options)
-  input = []
-
+def input(attr_name, *input, **options)
   attributes = options.each_with_object({}) do |(name, value), hash|
     case options[:as]
     when :text then hash[name] = "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
