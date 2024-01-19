@@ -1,4 +1,4 @@
-module FormBuilder
+module HexletCode
   def self.form_for(user)
     yield(user).join("\n")
   end
@@ -10,7 +10,7 @@ end
 
 
 class Struct
-  include FormBuilder
+  include HexletCode
 
   def input(key, **options)
     @params << @user.fetch(key)
