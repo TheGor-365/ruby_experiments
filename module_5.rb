@@ -32,8 +32,7 @@ pp HexletCode::Tag.build('div'); puts
 
 
 module HexletCode
-  def self.form_for(struct, url = {})
-    form = []
+  def self.form_for(struct, url = {}, *form)
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
     form << yield(struct)
     form << '</form>'
@@ -55,8 +54,7 @@ class Struct
       when :text then hash[name] = "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
       else hash[name] = "name='#{name}' type='text' value='#{value}'"
       end
-    end
-    constructor(attr_name, **options)
+    end; constructor(attr_name, **options)
   end
 
   def constructor(attr_name, **options)
