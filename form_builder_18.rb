@@ -3,15 +3,14 @@ require 'active_support/all'
 module HexletCode
   class Tag
     class << self
-      def build(name, **attributes)
+      def build(name, *tag, **attributes)
         attributes = attributes.map { |attr, value| " #{attr}='#{value}'" }
 
-        tag = []
         tag << "<#{name}"
         tag << attributes.join
         tag << '>' unless unpaired?(name)
         tag << yield if block_given?
-        tag << unpaired?(name) ? ">" : "</#{name}>"
+        tag << unpaired?(name) ? '>' : "</#{name}>"
         tag.join
       end
 
@@ -68,8 +67,7 @@ def input(attr_name, *input, **options)
     input << attributes.fetch(attr_name)
     input << (options.map { |attr_name, value| " #{attr_name}='#{value}'" })
     input << '>'
-  end
-  input
+  end; input
 end
 
 

@@ -1,18 +1,25 @@
 module FormBuilder
-  class << self
-    attr_accessor :input
+  def self.form_for(user)
+    yield(user).join("\n")
+  end
 
-    def form_for(struct, *form, **options)
-      form << yield(struct)
-      form
-    end
+  def initialize(user)
+    @user = user
   end
 end
 
-public
 
-def input(key, *input, **options)
-  pp key
+class Struct
+  include FormBuilder
+
+  def input(key, **options)
+    @params << @user.fetch(key)
+  end
+
+  def initialize(user)
+    @params = []
+    super(user)
+  end
 end
 
 

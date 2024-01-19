@@ -1,18 +1,14 @@
-module FormBuilder
-  class << self
-    attr_accessor :input
-
-    def form_for(struct, *form, **options)
-      form << yield(struct)
-      form
-    end
-  end
+def form_for(struct)
+  yield(struct)
 end
 
 public
 
 def input(key, *input, **options)
-  pp key
+  form_for self do |f|
+    input << f.to_h.fetch(key)
+  end
+  input
 end
 
 
@@ -20,7 +16,7 @@ end
 User = Struct.new(:name, :job, :gender, keyword_init: true)
 user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
-html = FormBuilder.form_for user do |f|
+html = form_for user do |f|
   f.input :name
   f.input :name
   f.input :job, as: :text

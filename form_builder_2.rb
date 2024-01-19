@@ -102,6 +102,7 @@ user = User_2.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 form_1 = HexletCode.form_for user do |f|
   f.input :name
+  f.input :name
   f.input :job, as: :text
   # f.input :gender
 end

@@ -15,8 +15,8 @@ pp FirstModule.var; puts
 
 module SecondModule
   @species = 'frog'
-  @color = 'red polka-dotted'
-  @log = []
+  @color   = 'red polka-dotted'
+  @log     = []
 
   def self.log(message)
     @log << message

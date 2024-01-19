@@ -49,7 +49,7 @@ end
 def submit(*button_name)
   submit = []
   submit << "  <input type='submit'"
-  submit << " name='#{button_name.present? ? button_name.join : "Save"}'"
+  submit << " name='#{button_name.present? ? button_name.join : 'Save'}'"
   submit << '>'
   submit.join
 end
