@@ -1,37 +1,39 @@
 require 'active_support/all'
 
-# module HexletCode
-#   class Tag
-#     def self.build(name, *tag, **attributes)
-#       attributes = attributes.map { |attr, value| " #{attr}='#{value}'" }
-#
-#       tag << "<#{name}"
-#       tag << attributes.join
-#       tag << '>' unless unpaired?(name)
-#       tag << yield if block_given?
-#       tag << (unpaired?(name) ? '>' : "</#{name}>")
-#       tag.join
-#     end
-#
-#     def self.unpaired?(tag)
-#       unpaired = %w[ br hr img input meta area base col embed link param source track command keygen menuitem wbr ]
-#       unpaired.include?(tag) ? true : false
-#     end
-#   end
-# end
-#
-#
-# pp HexletCode::Tag.build('br')
-# pp HexletCode::Tag.build('img', src: 'path/to/image')
-# pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
-# pp HexletCode::Tag.build('label') { 'Email' }
-# pp HexletCode::Tag.build('label', for: 'email') { 'Email' }
-# pp HexletCode::Tag.build('div'); puts
+module HexletCode
+  class Tag
+    def self.build(name, *tag, **attributes)
+      attributes = attributes.map { |attr, value| " #{attr}='#{value}'" }
+
+      tag << "<#{name}"
+      tag << attributes.join
+      tag << '>' unless unpaired?(name)
+      tag << yield if block_given?
+      tag << (unpaired?(name) ? '>' : "</#{name}>")
+      tag.join
+    end
+
+    def self.unpaired?(tag)
+      unpaired = %w[ br hr img input meta area base col embed link param source track command keygen menuitem wbr ]
+      unpaired.include?(tag) ? true : false
+    end
+  end
+end
+
+
+pp HexletCode::Tag.build('br')
+pp HexletCode::Tag.build('img', src: 'path/to/image')
+pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
+pp HexletCode::Tag.build('label') { 'Email' }
+pp HexletCode::Tag.build('label', for: 'email') { 'Email' }
+pp HexletCode::Tag.build('div'); puts
 
 
 
 
 module HexletCode
+  autoload(:Tag, 'module_6.rb')
+
   def self.form_for(struct, url = {}, *form)
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
     form << yield(struct)
@@ -49,17 +51,19 @@ end
 class Struct
   include HexletCode
 
-  def input(attr_name, **options)
+  def initialize(attributes)
+    super(attributes)
+  end
+
+  def input(attr_name, *input, **options)
+    public_send(attr_name) unless @attributes[attr_name]
+
     @input_attrs = @attributes.each_with_object({}) do |(name, value), hash|
       case options[:as]
       when :text then hash[name] = "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
       else hash[name] = "name='#{name}' type='text' value='#{value}'"
       end
-    end; constructor(attr_name, **options)
-  end
-
-  def constructor(attr_name, **options)
-    public_send(attr_name) unless @attributes[attr_name]
+    end
 
     case options[:as]
     when :text
@@ -75,12 +79,13 @@ class Struct
       @fields << @input_attrs.fetch(attr_name)
       @fields << (options.map { |option_name, value| " #{option_name}='#{value}'" })
       @fields << ">\n"
+      @fields
     end
   end
 
   def submit(*button_name)
     @fields << "  <input type='submit'"
-    @fields << " name='#{button_name.present? ? button_name.join : 'Save'}'"
+    @fields << " value='#{button_name.present? ? button_name.join : 'Save'}'"
     @fields << ">\n"
     @fields.join
   end
@@ -93,10 +98,6 @@ class Struct
     label << "</label>\n"
     label.join
   end
-
-  # def initialize(attributes)
-  #   super(attributes)
-  # end
 end
 
 
@@ -133,6 +134,7 @@ user = User_2.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 
 form_1 = HexletCode.form_for user do |f|
+  f.input :name
   f.input :name
   f.input :job, as: :text
   # f.input :gender
