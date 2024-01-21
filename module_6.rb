@@ -20,7 +20,6 @@ module HexletCode
   end
 end
 
-
 pp HexletCode::Tag.build('br')
 pp HexletCode::Tag.build('img', src: 'path/to/image')
 pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
@@ -43,16 +42,19 @@ module HexletCode
 
   def initialize(attributes)
     @attributes = attributes
-    @fields = []
   end
 end
+
+
+
 
 
 class Struct
   include HexletCode
 
-  def initialize(attributes)
-    super(attributes)
+  def initialize(params = {})
+    @fields = []
+    super
   end
 
   def input(attr_name, *input, **options)
@@ -99,6 +101,7 @@ class Struct
     label.join
   end
 end
+
 
 
 
