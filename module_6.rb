@@ -31,8 +31,6 @@ pp HexletCode::Tag.build('div'); puts
 
 
 module HexletCode
-  autoload(:Tag, 'module_6.rb')
-
   def self.form_for(struct, url = {}, *form)
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
     form << yield(struct)
@@ -52,15 +50,15 @@ end
 class Struct
   include HexletCode
 
-  def initialize(params = {})
-    @fields = []
+  def initialize(attributes)
     super
+    @fields = []
   end
 
-  def input(attr_name, *input, **options)
-    public_send(attr_name) unless @attributes[attr_name]
+  def input(key, *input, **options)
+    public_send(key) unless @attributes[key]
 
-    @input_attrs = @attributes.each_with_object({}) do |(name, value), hash|
+    @field = @attributes.each_with_object({}) do |(name, value), hash|
       case options[:as]
       when :text then hash[name] = "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
       else hash[name] = "name='#{name}' type='text' value='#{value}'"
@@ -69,17 +67,17 @@ class Struct
 
     case options[:as]
     when :text
-      @fields << label(attr_name)
+      @fields << label(key)
       @fields << '  <textarea '
-      @fields << @input_attrs.fetch(attr_name)
+      @fields << @field.fetch(key)
       @fields << '>'
-      @fields << @attributes.fetch(attr_name)
+      @fields << @attributes.fetch(key)
       @fields << "</textarea>\n"
     else
-      @fields << label(attr_name)
+      @fields << label(key)
       @fields << '  <input '
-      @fields << @input_attrs.fetch(attr_name)
-      @fields << (options.map { |option_name, value| " #{option_name}='#{value}'" })
+      @fields << @field.fetch(key)
+      @fields << (options.map { |name, value| " #{name}='#{value}'" })
       @fields << ">\n"
       @fields
     end
@@ -93,10 +91,10 @@ class Struct
   end
 
 
-  def label(attr_name, *label)
-    label << "  <label for='#{attr_name}'"
+  def label(name, *label)
+    label << "  <label for='#{name}'"
     label << '>'
-    label << attr_name.to_s.capitalize
+    label << name.to_s.capitalize
     label << "</label>\n"
     label.join
   end
@@ -118,7 +116,7 @@ end
 
 # <form action="#" method="post"></form>
 
-pp form_0
+puts form_0
 
 
 
@@ -127,7 +125,7 @@ end
 
 # <form action="/users" method="post"></form>
 
-pp form_0; puts
+puts form_0; puts
 
 
 
@@ -138,9 +136,7 @@ user = User_2.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 form_1 = HexletCode.form_for user do |f|
   f.input :name
-  f.input :name
   f.input :job, as: :text
-  # f.input :gender
 end
 
 # <form action="#" method="post">
@@ -148,7 +144,7 @@ end
 #   <textarea name="job" cols="20" rows="40">hexlet</textarea>
 # </form>
 
-pp form_1; puts
+puts form_1; puts
 
 
 
@@ -167,7 +163,7 @@ end
 #   <input name="job" type="text" value="hexlet">
 # </form>
 
-pp form_2; puts
+puts form_2; puts
 
 
 
@@ -184,7 +180,7 @@ end
 #   <textarea cols="50" rows="50" name="job">hexlet</textarea>
 # </form>
 
-pp form_3; puts
+puts form_3; puts
 
 
 
@@ -204,7 +200,7 @@ end
 
 # =>  `public_send': undefined method `age' for #<struct User id=nil, name=nil, job=nil> (NoMethodError)
 
-pp form_4; puts
+puts form_4; puts
 
 
 
@@ -227,7 +223,7 @@ end
 #   <input type="submit" value="Save">
 # </form>
 
-pp form_5; puts
+puts form_5; puts
 
 
 
@@ -250,4 +246,4 @@ end
 #   <input type="submit" value="Wow">
 # </form>
 
-pp form_6; puts
+puts form_6; puts

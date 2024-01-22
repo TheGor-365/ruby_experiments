@@ -1,8 +1,37 @@
 require 'active_support/all'
 
 module HexletCode
-  autoload(:Tag, "./lib/hexlet_code/tag.rb")
+  class Tag
+    def self.build(name, *tag, **attributes)
+      attributes = attributes.map { |attr, value| " #{attr}='#{value}'" }
 
+      tag << "<#{name}"
+      tag << attributes.join
+      tag << '>' unless unpaired?(name)
+      tag << yield if block_given?
+      tag << (unpaired?(name) ? '>' : "</#{name}>")
+      tag.join
+    end
+
+    def self.unpaired?(tag)
+      unpaired = %w[ br hr img input meta area base col embed link param source track command keygen menuitem wbr ]
+      unpaired.include?(tag) ? true : false
+    end
+  end
+end
+
+pp HexletCode::Tag.build('br')
+pp HexletCode::Tag.build('img', src: 'path/to/image')
+pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
+pp HexletCode::Tag.build('label') { 'Email' }
+pp HexletCode::Tag.build('label', for: 'email') { 'Email' }
+pp HexletCode::Tag.build('div'); puts
+
+
+
+
+
+module HexletCode
   def self.form_for(struct, url = {}, *form)
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
     form << yield(struct)
@@ -12,6 +41,7 @@ module HexletCode
 
   def initialize(attributes)
     @attributes = attributes
+    @fields = []
   end
 end
 
@@ -21,8 +51,7 @@ end
 class Struct
   include HexletCode
 
-  def initialize(*params)
-    @fields = []
+  def initialize(params)
     super
   end
 
@@ -31,9 +60,11 @@ class Struct
 
     @field = @attributes.each_with_object({}) do |(name, value), pair|
       pair[name] = case options[:as]
-                   when :text then "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
-                   else "name='#{name}' type='text' value='#{value}'"
-                   end
+       when :text
+         "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
+       else
+         "name='#{name}' type='text' value='#{value}'"
+       end
     end
 
     case options[:as]
@@ -75,17 +106,17 @@ end
 User = Struct.new(:name, :job, keyword_init: true)
 user = User.new name: 'rob'
 
-pp user.name; puts
+puts user.name; puts
 #=> rob
 
 
 form_0 = HexletCode.form_for(user) { |f| }
 # <form action="#" method="post"></form>
-pp form_0
+puts form_0
 
 form_0 = HexletCode.form_for(user, url: '/users') { |f| }
 # <form action="/users" method="post"></form>
-pp form_0; puts
+puts form_0; puts
 
 
 
@@ -106,7 +137,7 @@ end
 #   <textarea name="job" cols="20" rows="40">hexlet</textarea>
 # </form>
 
-pp form_1; puts
+puts form_1; puts
 
 
 
@@ -120,7 +151,7 @@ end
 #   <input name="job" type="text" value="hexlet">
 # </form>
 
-pp form_2; puts
+puts form_2; puts
 
 
 
@@ -132,7 +163,7 @@ end
 #   <textarea cols="50" rows="50" name="job">hexlet</textarea>
 # </form>
 
-pp form_3; puts
+puts form_3; puts
 
 
 
@@ -145,7 +176,7 @@ end
 
 # =>  `public_send': undefined method `age' for #<struct User id=nil, name=nil, job=nil> (NoMethodError)
 
-pp form_4; puts
+puts form_4; puts
 
 
 
@@ -163,7 +194,7 @@ end
 #   <input type="submit" value="Save">
 # </form>
 
-pp form_5; puts
+puts form_5; puts
 
 
 
@@ -181,4 +212,4 @@ end
 #   <input type="submit" value="Wow">
 # </form>
 
-pp form_6; puts
+puts form_6; puts
