@@ -37,9 +37,7 @@ class TestHexletCode < Minitest::Test
   def test_empty_form
     user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
-    form = '<form action="#" method="post">
-            </form>'
-
+    form    = "<form action='#' method='post'>\n</form>"
     builder = HexletCode.form_for(user) { |f| }
 
     assert { builder == form }
@@ -48,9 +46,7 @@ class TestHexletCode < Minitest::Test
   def test_empty_form_with_custom_url
     user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
-    form = "<form action='/users' method='post'>
-            </form>"
-
+    form    = "<form action='/users' method='post'>\n</form>"
     builder = HexletCode.form_for(user, url: '/users') { |f| }
 
     assert { builder == form }
@@ -59,12 +55,7 @@ class TestHexletCode < Minitest::Test
   def test_form_with_input_and_textarea_fields
     user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
-    form = '<form action="#" method="post">
-              <label for="name">Name</label>
-              <input name="name" type="text" value="rob">
-              <label for="job">Job</label>
-              <textarea name="job" cols="20" rows="40">hexlet</textarea>
-            </form>'
+    form = "<form action='#' method='post'>\n  <label for='name'>Name</label>\n  <input name='name' type='text' value='rob'>\n  <label for='job'>Job</label>\n  <textarea name='job' cols='20' rows='40'>hexlet</textarea>\n</form>"
 
     builder = HexletCode.form_for user do |f|
       f.input :name
@@ -77,12 +68,7 @@ class TestHexletCode < Minitest::Test
   def test_form_with_input_fields_with_custom_attributes
     user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
-    form = '<form action="#" method="post">
-              <label for="name">Name</label>
-              <input name="name" type="text" value="rob" class="user-input">
-              <label for="job">Job</label>
-              <input name="job" type="text" value="">
-            </form>'
+    form = "<form action='#' method='post'>\n  <label for='name'>Name</label>\n  <input name='name' type='text' value='rob' class='user-input'>\n  <label for='job'>Job</label>\n  <input name='job' type='text' value='hexlet'>\n</form>"
 
     builder = HexletCode.form_for user, url: '#' do |f|
       f.input :name, class: 'user-input'
@@ -95,10 +81,7 @@ class TestHexletCode < Minitest::Test
   def test_form_with_attributes_for_textarea
     user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
-    form = '<form action="#" method="post">
-              <label for="job">Job</label>
-              <textarea cols="50" rows="50" name="job">hexlet</textarea>
-            </form>'
+    form = "<form action='#' method='post'>\n  <label for='job'>Job</label>\n  <textarea name='job' cols='50' rows='50'>hexlet</textarea>\n</form>"
 
     builder = HexletCode.form_for user, url: '#' do |f|
       f.input :job, as: :text, rows: 50, cols: 50
@@ -108,15 +91,9 @@ class TestHexletCode < Minitest::Test
   end
 
   def test_form_with_submit
-    user = User.new job: 'hexlet'
+    user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
-    form = "<form action='#' method='post'>
-              <label for='name'>Name</label>
-              <input name='name' type='text' value='rob'>
-              <label for='job'>Job</label>
-              <input name='job' type='text' value='hexlet'>
-              <input type='submit' value='Save'>
-            </form>"
+    form = "<form action='#' method='post'>\n  <label for='name'>Name</label>\n  <input name='name' type='text' value='rob'>\n  <label for='job'>Job</label>\n  <input name='job' type='text' value='hexlet'>\n  <input type='submit' value='Save'>\n</form>"
 
     builder = HexletCode.form_for user do |f|
       f.input :name
@@ -128,15 +105,9 @@ class TestHexletCode < Minitest::Test
   end
 
   def test_form_with_submit_custom_name
-    user = User.new job: 'hexlet'
+    user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
-    form = "<form action='#' method='post'>
-              <label for='name'>Name</label>
-              <input name='name' type='text' value='rob'>
-              <label for='job'>Job</label>
-              <input name='job' type='text' value='hexlet'>
-              <input type='submit' value='Wow'>
-            </form>"
+    form = "<form action='#' method='post'>\n  <label for='name'>Name</label>\n  <input name='name' type='text' value='rob'>\n  <label for='job'>Job</label>\n  <input name='job' type='text' value='hexlet'>\n  <input type='submit' value='Wow'>\n</form>"
 
     builder = HexletCode.form_for user do |f|
       f.input :name

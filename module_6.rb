@@ -37,10 +37,6 @@ module HexletCode
     form << '</form>'
     form.join
   end
-
-  def initialize(attributes)
-    @attributes = attributes
-  end
 end
 
 
@@ -48,17 +44,14 @@ end
 
 
 class Struct
-  include HexletCode
-
-  def initialize(attributes)
-    super
-    @fields = []
-  end
+  prepend HexletCode
 
   def input(key, *input, **options)
-    public_send(key) unless @attributes[key]
+    public_send(key) unless self.to_h[key]
 
-    @field = @attributes.each_with_object({}) do |(name, value), hash|
+    @fields = []
+
+    field = self.to_h.each_with_object({}) do |(name, value), hash|
       case options[:as]
       when :text then hash[name] = "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
       else hash[name] = "name='#{name}' type='text' value='#{value}'"
@@ -69,14 +62,14 @@ class Struct
     when :text
       @fields << label(key)
       @fields << '  <textarea '
-      @fields << @field.fetch(key)
+      @fields << field.fetch(key)
       @fields << '>'
-      @fields << @attributes.fetch(key)
+      @fields << self.to_h.fetch(key)
       @fields << "</textarea>\n"
     else
       @fields << label(key)
       @fields << '  <input '
-      @fields << @field.fetch(key)
+      @fields << field.fetch(key)
       @fields << (options.map { |name, value| " #{name}='#{value}'" })
       @fields << ">\n"
       @fields
@@ -107,7 +100,7 @@ end
 User = Struct.new(:name, :job, keyword_init: true)
 user = User.new name: 'rob'
 
-# puts user.name
+pp user.name; puts
 #=> rob
 
 

@@ -1,32 +1,32 @@
 require 'active_support/all'
 
-# module HexletCode
-#   class Tag
-#     def self.build(name, *tag, **attributes)
-#       attributes = attributes.map { |attr, value| " #{attr}='#{value}'" }
-#
-#       tag << "<#{name}"
-#       tag << attributes.join
-#       tag << '>' unless unpaired?(name)
-#       tag << yield if block_given?
-#       tag << (unpaired?(name) ? '>' : "</#{name}>")
-#       tag.join
-#     end
-#
-#     def self.unpaired?(tag)
-#       unpaired = %w[ br hr img input meta area base col embed link param source track command keygen menuitem wbr ]
-#       unpaired.include?(tag) ? true : false
-#     end
-#   end
-# end
-#
-#
-# pp HexletCode::Tag.build('br')
-# pp HexletCode::Tag.build('img', src: 'path/to/image')
-# pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
-# pp HexletCode::Tag.build('label') { 'Email' }
-# pp HexletCode::Tag.build('label', for: 'email') { 'Email' }
-# pp HexletCode::Tag.build('div'); puts
+module HexletCode
+  class Tag
+    def self.build(name, *tag, **attributes)
+      attributes = attributes.map { |attr, value| " #{attr}='#{value}'" }
+
+      tag << "<#{name}"
+      tag << attributes.join
+      tag << '>' unless unpaired?(name)
+      tag << yield if block_given?
+      tag << (unpaired?(name) ? '>' : "</#{name}>")
+      tag.join
+    end
+
+    def self.unpaired?(tag)
+      unpaired = %w[ br hr img input meta area base col embed link param source track command keygen menuitem wbr ]
+      unpaired.include?(tag) ? true : false
+    end
+  end
+end
+
+
+pp HexletCode::Tag.build('br')
+pp HexletCode::Tag.build('img', src: 'path/to/image')
+pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
+pp HexletCode::Tag.build('label') { 'Email' }
+pp HexletCode::Tag.build('label', for: 'email') { 'Email' }
+pp HexletCode::Tag.build('div'); puts
 
 
 
@@ -39,64 +39,52 @@ module HexletCode
     form.join
   end
 
-  def initialize(attributes)
-    @attributes = attributes
-    @fields = []
-  end
+  @@input = []
 end
 
 
 class Struct
   include HexletCode
 
-  def input(attr_name, **options)
-    @input_attrs = @attributes.each_with_object({}) do |(name, value), hash|
+  def input(key, **options)
+    field = self.to_h.each_with_object({}) do |(name, value), hash|
       case options[:as]
       when :text then hash[name] = "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
       else hash[name] = "name='#{name}' type='text' value='#{value}'"
       end
-    end; constructor(attr_name, **options)
-  end
-
-  def constructor(attr_name, **options)
-    public_send(attr_name) unless @attributes[attr_name]
+    end
 
     case options[:as]
     when :text
-      @fields << label(attr_name)
-      @fields << '  <textarea '
-      @fields << @input_attrs.fetch(attr_name)
-      @fields << '>'
-      @fields << @attributes.fetch(attr_name)
-      @fields << "</textarea>\n"
+      @@input << label(key)
+      @@input << '  <textarea '
+      @@input << field.fetch(key)
+      @@input << '>'
+      @@input << self.to_h.fetch(key)
+      @@input << "</textarea>\n"
     else
-      @fields << label(attr_name)
-      @fields << '  <input '
-      @fields << @input_attrs.fetch(attr_name)
-      @fields << (options.map { |option_name, value| " #{option_name}='#{value}'" })
-      @fields << ">\n"
+      @@input << label(key)
+      @@input << '  <input '
+      @@input << field.fetch(key)
+      @@input << (options.map { |name, value| " #{name}='#{value}'" })
+      @@input << ">\n"
     end
   end
 
-  def submit(*button_name)
-    @fields << "  <input type='submit'"
-    @fields << " name='#{button_name.present? ? button_name.join : 'Save'}'"
-    @fields << ">\n"
-    @fields.join
+  def submit(*name)
+    @@input << "  <input type='submit'"
+    @@input << " name='#{name.any? ? name.join : 'Save'}'"
+    @@input << ">\n"
+    @@input.join
   end
 
-
-  def label(attr_name, *label)
-    label << "  <label for='#{attr_name}'"
+  def label(name, *label)
+    label << "  <label for='#{name}'"
     label << '>'
-    label << attr_name.to_s.capitalize
+    label << name.to_s.capitalize
     label << "</label>\n"
     label.join
   end
-
-  # def initialize(attributes)
-  #   super(attributes)
-  # end
 end
 
 
@@ -105,37 +93,28 @@ end
 User = Struct.new(:name, :job, keyword_init: true)
 user = User.new name: 'rob'
 
-# puts user.name
+pp user.name; puts
 #=> rob
 
 
-form_0 = HexletCode.form_for user do |f|
-end
-
+form_0 = HexletCode.form_for(user) { |f| }
 # <form action="#" method="post"></form>
+puts form_0
 
-pp form_0
-
-
-
-form_0 = HexletCode.form_for user, url: '/users' do |f|
-end
-
+form_0 = HexletCode.form_for(user, url: '/users') { |f| }
 # <form action="/users" method="post"></form>
-
-pp form_0; puts
+puts form_0; puts
 
 
 
 User_2 = Struct.new(:name, :job, :gender, keyword_init: true)
-user = User_2.new(name: 'rob', job: 'hexlet', gender: 'm')
+user_2 = User_2.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 
 
-form_1 = HexletCode.form_for user do |f|
+form_1 = HexletCode.form_for user_2 do |f|
   f.input :name
   f.input :job, as: :text
-  # f.input :gender
 end
 
 # <form action="#" method="post">
@@ -143,7 +122,7 @@ end
 #   <textarea name="job" cols="20" rows="40">hexlet</textarea>
 # </form>
 
-pp form_1; puts
+puts form_1; puts
 
 
 
@@ -162,7 +141,7 @@ end
 #   <input name="job" type="text" value="hexlet">
 # </form>
 
-pp form_2; puts
+puts form_2; puts
 
 
 
@@ -179,7 +158,7 @@ end
 #   <textarea cols="50" rows="50" name="job">hexlet</textarea>
 # </form>
 
-pp form_3; puts
+puts form_3; puts
 
 
 
@@ -193,13 +172,11 @@ user_5 = User_5.new(name: 'rob', job: 'hexlet', gender: 'm')
 form_4 = HexletCode.form_for user_5, url: '/users/path' do |f|
   f.input :name
   f.input :job, as: :text
-
   # f.input :age
 end
-
 # =>  `public_send': undefined method `age' for #<struct User id=nil, name=nil, job=nil> (NoMethodError)
 
-pp form_4; puts
+puts form_4; puts
 
 
 
@@ -222,7 +199,7 @@ end
 #   <input type="submit" value="Save">
 # </form>
 
-pp form_5; puts
+puts form_5; puts
 
 
 
@@ -245,4 +222,4 @@ end
 #   <input type="submit" value="Wow">
 # </form>
 
-pp form_6; puts
+puts form_6; puts

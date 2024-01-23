@@ -32,63 +32,58 @@ pp HexletCode::Tag.build('div'); puts
 
 
 module HexletCode
+  def initialize(attributes)
+    @attributes = attributes
+    @input ||= []
+  end
+
   def self.form_for(struct, url = {}, *form)
     form << (url.key?(:url) ? "<form action='#{url.fetch(:url)}' method='post'>\n" : "<form action='#' method='post'>\n")
     form << yield(struct)
     form << "</form>"
     form.join
   end
-
-  def initialize(attributes)
-    @attributes = attributes
-    @fields = []
-  end
 end
 
-
-
-
 class Struct
-  include HexletCode
+  prepend HexletCode
 
   def initialize(params)
     super
   end
 
-  def input(attr_name, **options)
-    public_send(attr_name) unless @attributes[attr_name]
+  def input(key, **options)
+    public_send(key) unless @attributes[key]
 
-    @field = @attributes.each_with_object({}) do |(name, value), pair|
+    field = @attributes.each_with_object({}) do |(name, value), pair|
       pair[name] = case options[:as]
-       when :text
-         "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
-       else
-         "name='#{name}' type='text' value='#{value}'"
-       end
+      when :text then "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
+      else "name='#{name}' type='text' value='#{value}'"
+      end
     end
 
     case options[:as]
     when :text
-      @fields << label(attr_name)
-      @fields << "  <textarea "
-      @fields << @field.fetch(attr_name)
-      @fields << ">"
-      @fields << @attributes.fetch(attr_name)
-      @fields << "</textarea>\n"
+      @input << label(key)
+      @input << "  <textarea "
+      @input << field.fetch(key)
+      @input << ">"
+      @input << @attributes.fetch(key)
+      @input << "</textarea>\n"
     else
-      @fields << label(attr_name)
-      @fields << "  <input "
-      @fields << @field.fetch(attr_name)
-      @fields << (options.map { |name, value| " #{name}='#{value}'" })
-      @fields << ">\n"
+      @input << label(key)
+      @input << "  <input "
+      @input << field.fetch(key)
+      @input << (options.map { |name, value| " #{name}='#{value}'" })
+      @input << ">\n"
     end
   end
 
   def submit(*button_name)
-    @fields << "  <input type='submit'"
-    @fields << " value='#{button_name.present? ? button_name.join : "Save"}'"
-    @fields << ">\n"
-    @fields.join
+    @input << "  <input type='submit'"
+    @input << " value='#{button_name.present? ? button_name.join : "Save"}'"
+    @input << ">\n"
+    @input.join
   end
 
   def label(name, *label)
@@ -104,11 +99,8 @@ end
 
 
 User = Struct.new(:name, :job, keyword_init: true)
-user = User.new name: 'rob'
-
-puts user.name; puts
-#=> rob
-
+user = User.new(name: 'rob')
+pp user; puts
 
 form_0 = HexletCode.form_for(user) { |f| }
 # <form action="#" method="post"></form>
