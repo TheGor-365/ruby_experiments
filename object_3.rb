@@ -1,73 +1,37 @@
+require 'active_support/all'
+
 module HexletCode
-  # def self.included(base)
-  #   base.class_eval do
-  #     original_method = instance_method(:initialize)
-  #
-  #     define_method(:initialize) do |*args, &block|
-  #       original_method.bind(self).call(*args, &block)
-  #     end
-  #   end
-  # end
+  def self.included(base)
+    base.class_eval do
+      original_method = instance_method(:initialize)
+
+      define_method(:initialize) do |*args, &block|
+        original_method.bind(self).call(*args, &block)
+      end
+    end
+  end
 
   def self.form_for(struct, *form, **options)
-    form << "<form"
-    form << (options.key?(:url) ? " action='#{options.fetch(:url)}'" : " action='#'")
-    form << (options.key?(:method) ? " method='#{options.fetch(:method)}'" : " method='post'")
-    options.each { |key, value| form << " #{key}='#{value}'" if key != :url && key != :method }
-    form << ">\n"
-    form << yield(struct) if block_given?
-    form << "</form>"; form.join
+    form << yield(struct)
   end
 end
 
 class Struct
-  def initialize(input)
+  def initialize(param)
+    @param = param
     @input = []
   end
 
-  def input(key, **options)
-    public_send(key) unless to_h[key]
-
-    field = to_h.each_with_object({}) do |(name, value), pair|
-      pair[name] =
-      case options[:as]
-      when :text then "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
-      when nil   then "name='#{name}' type='text' value='#{value}'"
-      end
-    end
-
-    @input << label(key)
-
-    if options[:as] == :text
-      @input << "  <textarea "
-      @input << field.fetch(key)
-      @input << ">"
-      @input << to_h.fetch(key)
-      @input << "</textarea>\n"
-    else
-      @input << "  <input "
-      @input << field.fetch(key)
-      @input << (options.map {|name, value| " #{name}='#{value}'"})
-      @input << ">\n"
-    end
+  def input(key, *input, **options)
+    @input << key
   end
 
-  def label(name, *label)
-    label << "  <label for='#{name}'"
-    label << ">"
-    label << name.to_s.capitalize
-    label << "</label>\n"
-  end
-
-  def submit(name = nil, *submit)
-    @input << "  <input type='submit'"
-    @input << (" name='#{name.nil? ? "Save" : name}'")
-    @input << ">\n"
+  def submit(name = nil)
+    @input << (!name.nil? ? name : 'no name')
   end
 
   include HexletCode
 end
-
 
 
 
@@ -89,7 +53,7 @@ puts form_0; puts
 
 
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 
 # User = Struct.new(:name, :job, :gender, keyword_init: true)
@@ -107,7 +71,7 @@ end
 
 puts form_1; puts
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 form_2 = HexletCode.form_for(user, url: '##') do |f|
   f.input :name, class: 'user-input'
@@ -121,7 +85,7 @@ end
 
 puts form_2; puts
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 form_3 = HexletCode.form_for user, url: '/users' do |f|
   f.input :job, as: :text, rows: 50, cols: 50
@@ -133,7 +97,7 @@ end
 
 puts form_3; puts
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 
 form_4 = HexletCode.form_for user, url: '/users/path' do |f|
@@ -146,7 +110,7 @@ end
 
 puts form_4; puts
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 form_5 = HexletCode.form_for user do |f|
   f.input :name
@@ -164,7 +128,7 @@ end
 
 puts form_5; puts
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 form_6 = HexletCode.form_for user, url: '#', method: 'get' do |f|
   f.input :name
