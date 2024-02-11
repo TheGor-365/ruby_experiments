@@ -1,38 +1,52 @@
-require 'active_support/all'
+require 'html_escape'
 
 module HexletCode
-  def self.included(base)
-    base.class_eval do
-      original_method = instance_method(:initialize)
+  class FormBuilder
+    def initialize(object, url: "#", method: "post", **options)
+      @object = object
+      @url = url
+      @method = method
+      @options = options
+      @fields = []
+    end
 
-      define_method(:initialize) do |*args, &block|
-        original_method.bind(self).call(*args, &block)
+    def input(key, type: :text, **options)
+      @fields << [key, type, HTMLEscape.html_escape(options)]
+    end
+
+    def submit(value: "Save")
+      @fields << [:submit, :submit, value: HTMLEscape.html_escape(value)]
+    end
+
+    def to_html
+      html = "<form action='#{@url}' method='#{@method}'#{hash_to_attrs(@options)}>\n"
+      @fields.each do |name, type, options|
+        label = "<label for='#{name}'>#{name.to_s.capitalize}</label>\n"
+        case type
+        when :text then
+          html += "#{label}<input name='#{name}' type='text' value='#{@object.public_send(name)}'#{hash_to_attrs(options)}>\n"
+        when :textarea then
+          html += "#{label}<textarea name='#{name}'#{hash_to_attrs(options)}>#{@object.public_send(name)}</textarea>\n"
+        else
+          raise NotImplementedError, "Input type #{type} not supported yet"
+        end
       end
+      html += "</form>\n"
+    end
+
+    private
+
+    def hash_to_attrs(hash)
+      hash.map { |key, value| " #{key}='#{value}'" }.join
     end
   end
 
-  def self.form_for(struct, *form, **options)
-    form << yield(struct)
+  def self.form_for(object, url: "#", method: "post", **options)
+    builder = FormBuilder.new(object, url: url, method: method, **options)
+    yield builder
+    builder.to_html
   end
 end
-
-class Struct
-  def initialize(param)
-    @param = param
-    @input = []
-  end
-
-  def input(key, *input, **options)
-    @input << key
-  end
-
-  def submit(name = nil)
-    @input << (!name.nil? ? name : 'no name')
-  end
-
-  include HexletCode
-end
-
 
 
 
@@ -52,8 +66,8 @@ form_0 = HexletCode.form_for(user, url: '/users') { |f| }
 puts form_0; puts
 
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 
 # User = Struct.new(:name, :job, :gender, keyword_init: true)
@@ -97,8 +111,8 @@ end
 
 puts form_3; puts
 
-
 user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 form_4 = HexletCode.form_for user, url: '/users/path' do |f|
   f.input :name
@@ -110,7 +124,7 @@ end
 
 puts form_4; puts
 
-
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 form_5 = HexletCode.form_for user do |f|
   f.input :name
@@ -128,7 +142,7 @@ end
 
 puts form_5; puts
 
-
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 form_6 = HexletCode.form_for user, url: '#', method: 'get' do |f|
   f.input :name

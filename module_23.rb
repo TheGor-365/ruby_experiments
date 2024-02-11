@@ -1,38 +1,61 @@
 require 'active_support/all'
 
 module HexletCode
-  def self.included(base)
-    base.class_eval do
-      original_method = instance_method(:initialize)
+  class Tag
+    def self.build(name, *tag, **attributes)
+      attributes = attributes.map { |attr, value| " #{attr}='#{value}'" }
 
-      define_method(:initialize) do |*args, &block|
-        original_method.bind(self).call(*args, &block)
-      end
+      tag << "<#{name}"
+      tag << attributes.join
+      tag << '>' unless unpaired?(name)
+      tag << yield if block_given?
+      tag << (unpaired?(name) ? '>' : "</#{name}>")
+      tag.join
+    end
+
+    def self.unpaired?(tag)
+      unpaired = %w[ br hr img input meta area base col embed link param source track command keygen menuitem wbr ]
+      unpaired.include?(tag) ? true : false
     end
   end
-
-  def self.form_for(struct, *form, **options)
-    form << yield(struct)
-  end
 end
 
-class Struct
-  def initialize(param)
-    @param = param
-    @input = []
+
+pp HexletCode::Tag.build('br')
+pp HexletCode::Tag.build('img', src: 'path/to/image')
+pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
+pp HexletCode::Tag.build('label') { 'Email' }
+pp HexletCode::Tag.build('label', for: 'email') { 'Email' }
+pp HexletCode::Tag.build('div'); puts
+
+
+
+module HexletCode
+  def self.form_for(entity, **options, &block)
+    form_tag = Tag.build('form', action: options.fetch(:url, '#'), method: options.fetch(:method, 'post'))
+    yield(form_tag) if block_given?
+    form_tag
   end
 
-  def input(key, *input, **options)
-    @input << key
+  def input(name, **options)
+    value = public_send(name)
+
+    field_tag = if options[:as] == :text
+                  Tag.build('textarea', name: name, cols: options.fetch(:cols, 20), rows: options.fetch(:rows, 40)) { value }
+                else
+                  Tag.build('input', name: name, type: 'text', value: value)
+                end
+    label_tag = Tag.build('label', for: name.to_s) { name.to_s.capitalize }
+
+    @input << label_tag
+    @input << field_tag
   end
 
-  def submit(name = nil)
-    @input << (!name.nil? ? name : 'no name')
+  def submit(value = 'Save')
+    submit_tag = Tag.build('input', type: 'submit', value: value)
+    @input << submit_tag
   end
-
-  include HexletCode
 end
-
 
 
 
@@ -52,8 +75,8 @@ form_0 = HexletCode.form_for(user, url: '/users') { |f| }
 puts form_0; puts
 
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 
 # User = Struct.new(:name, :job, :gender, keyword_init: true)
@@ -97,8 +120,8 @@ end
 
 puts form_3; puts
 
-
 user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 form_4 = HexletCode.form_for user, url: '/users/path' do |f|
   f.input :name
@@ -110,7 +133,7 @@ end
 
 puts form_4; puts
 
-
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 form_5 = HexletCode.form_for user do |f|
   f.input :name
@@ -128,7 +151,7 @@ end
 
 puts form_5; puts
 
-
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 form_6 = HexletCode.form_for user, url: '#', method: 'get' do |f|
   f.input :name

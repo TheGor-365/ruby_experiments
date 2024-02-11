@@ -1,38 +1,36 @@
-require 'active_support/all'
-
 module HexletCode
-  def self.included(base)
-    base.class_eval do
-      original_method = instance_method(:initialize)
+  class FormBuilder
+    def initialize(object, url: "#", **options)
+      @object = object
+      @url = url
+      @options = options
+      @fields = []
+    end
 
-      define_method(:initialize) do |*args, &block|
-        original_method.bind(self).call(*args, &block)
+    def input(name, type: :text, **options)
+      @fields << [name, type, options]
+    end
+
+    def submit(value = "Save")
+      @fields << ["submit", :submit, value: value]
+    end
+
+    def to_html
+      html = "<form action='#{@url}' method='post'>\n"
+      @fields.each do |name, type, options|
+        html += "<label for='#{name}'>#{name.to_s.capitalize}</label>\n"
+        html += "<input name='#{name}' type='#{type}' value='#{@object.public_send(name)}'#{options.map { |key, value| " #{key}='#{value}'" }.join}>\n"
       end
+      html += "</form>\n"
     end
   end
 
-  def self.form_for(struct, *form, **options)
-    form << yield(struct)
+  def self.form_for(object, url: "#", **options)
+    builder = FormBuilder.new(object, url: url, **options)
+    yield builder
+    builder.to_html
   end
 end
-
-class Struct
-  def initialize(param)
-    @param = param
-    @input = []
-  end
-
-  def input(key, *input, **options)
-    @input << key
-  end
-
-  def submit(name = nil)
-    @input << (!name.nil? ? name : 'no name')
-  end
-
-  include HexletCode
-end
-
 
 
 
@@ -52,8 +50,8 @@ form_0 = HexletCode.form_for(user, url: '/users') { |f| }
 puts form_0; puts
 
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 
 # User = Struct.new(:name, :job, :gender, keyword_init: true)
@@ -97,8 +95,8 @@ end
 
 puts form_3; puts
 
-
 user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 form_4 = HexletCode.form_for user, url: '/users/path' do |f|
   f.input :name
@@ -110,7 +108,7 @@ end
 
 puts form_4; puts
 
-
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 form_5 = HexletCode.form_for user do |f|
   f.input :name
@@ -128,7 +126,7 @@ end
 
 puts form_5; puts
 
-
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 form_6 = HexletCode.form_for user, url: '#', method: 'get' do |f|
   f.input :name

@@ -1,37 +1,96 @@
 require 'active_support/all'
 
 module HexletCode
-  def self.included(base)
-    base.class_eval do
-      original_method = instance_method(:initialize)
+  class Tag
+    def self.build(name, *tag, **attributes)
+      attributes = attributes.map { |attr, value| " #{attr}='#{value}'" }
 
-      define_method(:initialize) do |*args, &block|
-        original_method.bind(self).call(*args, &block)
+      tag << "<#{name}"
+      tag << attributes.join
+      tag << '>' unless unpaired?(name)
+      tag << yield if block_given?
+      tag << (unpaired?(name) ? '>' : "</#{name}>")
+      tag.join
+    end
+
+    def self.unpaired?(tag)
+      unpaired = %w[ br hr img input meta area base col embed link param source track command keygen menuitem wbr ]
+      unpaired.include?(tag) ? true : false
+    end
+  end
+end
+
+
+pp HexletCode::Tag.build('br')
+pp HexletCode::Tag.build('img', src: 'path/to/image')
+pp HexletCode::Tag.build('input', type: 'submit', value: 'Save')
+pp HexletCode::Tag.build('label') { 'Email' }
+pp HexletCode::Tag.build('label', for: 'email') { 'Email' }
+pp HexletCode::Tag.build('div'); puts
+
+
+
+
+module HexletCode
+  def self.form_for(struct, *form, **options)
+    form << "<form"
+    form << (options.key?(:url) ? " action='#{options.fetch(:url)}'" : " action='#'")
+    form << (options.key?(:method) ? " method='#{options.fetch(:method)}'" : " method='post'")
+    options.each { |key, value| form << " #{key}='#{value}'" if key != :url && key != :method }
+    form << ">\n"
+    form << yield(struct) if block_given?
+    form << "</form>"; form.join
+  end
+
+  def input(key, *input, **options)
+    public_send(key) unless to_h[key]
+
+    field = to_h.each_with_object({}) do |(name, value), pair|
+      pair[name] =
+      case options[:as]
+      when :text then "name='#{name}' cols='#{options.fetch(:cols, 20)}' rows='#{options.fetch(:rows, 40)}'"
+      when nil   then "name='#{name}' type='text' value='#{value}'"
       end
+    end
+
+    @input << label(key)
+
+    if options[:as] == :text
+      @input << "  <textarea "
+      @input << field.fetch(key)
+      @input << ">"
+      @input << to_h.fetch(key)
+      @input << "</textarea>\n"
+    else
+      @input << "  <input "
+      @input << field.fetch(key)
+      @input << (options.map {|name, value| " #{name}='#{value}'"})
+      @input << ">\n"
     end
   end
 
-  def self.form_for(struct, *form, **options)
-    form << yield(struct)
+  def label(name, *label)
+    label << "  <label for='#{name}'"
+    label << ">"
+    label << name.to_s.capitalize
+    label << "</label>\n"
+  end
+
+  def submit(name = nil, *submit)
+    @input << "  <input type='submit'"
+    @input << (" name='#{name.nil? ? "Save" : name}'")
+    @input << ">\n"
   end
 end
 
 class Struct
-  def initialize(param)
-    @param = param
+  include HexletCode
+
+  def initialize(input)
     @input = []
   end
-
-  def input(key, *input, **options)
-    @input << key
-  end
-
-  def submit(name = nil)
-    @input << (!name.nil? ? name : 'no name')
-  end
-
-  include HexletCode
 end
+
 
 
 
@@ -52,7 +111,7 @@ form_0 = HexletCode.form_for(user, url: '/users') { |f| }
 puts form_0; puts
 
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 
 
@@ -71,7 +130,7 @@ end
 
 puts form_1; puts
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 form_2 = HexletCode.form_for(user, url: '##') do |f|
   f.input :name, class: 'user-input'
@@ -85,7 +144,7 @@ end
 
 puts form_2; puts
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 form_3 = HexletCode.form_for user, url: '/users' do |f|
   f.input :job, as: :text, rows: 50, cols: 50
@@ -98,12 +157,12 @@ end
 puts form_3; puts
 
 
-user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
+
 
 form_4 = HexletCode.form_for user, url: '/users/path' do |f|
   f.input :name
   f.input :job, as: :text
-  # f.input :age
+  f.input :age
 end
 
 # =>  `public_send': undefined method `age' for #<struct User id=nil, name=nil, job=nil> (NoMethodError)

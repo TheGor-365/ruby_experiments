@@ -54,7 +54,7 @@ puts form_0; puts
 
 
 
-
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 
 # User = Struct.new(:name, :job, :gender, keyword_init: true)
@@ -72,7 +72,7 @@ end
 
 puts form_1; puts
 
-
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 form_2 = HexletCode.form_for(user, url: '##') do |f|
   f.input :name, class: 'user-input'
@@ -86,7 +86,7 @@ end
 
 puts form_2; puts
 
-
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 form_3 = HexletCode.form_for user, url: '/users' do |f|
   f.input :job, as: :text, rows: 50, cols: 50
@@ -99,7 +99,7 @@ end
 puts form_3; puts
 
 
-
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 form_4 = HexletCode.form_for user, url: '/users/path' do |f|
   f.input :name
@@ -111,7 +111,7 @@ end
 
 puts form_4; puts
 
-
+user = User.new(name: 'rob', job: 'hexlet', gender: 'm')
 
 form_5 = HexletCode.form_for user do |f|
   f.input :name
